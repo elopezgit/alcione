@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #FFB800; /* Dorado brillante del logo */
+  --color-primary-hover: #E5A600;
+  --color-secondary: #000000; /* Negro profundo */
+  --color-surface: #121212; /* Gris muy oscuro para tarjetas */
+  --color-background: #0A0A0A; /* Fondo casi negro */
+}
+
+@layer base {
+  body {
+    @apply bg-background text-slate-100 font-sans antialiased selection:bg-primary/20 selection:text-primary;
+    overscroll-behavior-y: none; /* Prevents pull-to-refresh bounce on mobile apps */
+  }
+}
+
+@layer utilities {
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
