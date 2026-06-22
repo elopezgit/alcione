@@ -137,7 +137,11 @@ export default function ClientHome() {
 
         if (cats.data) setCategories(cats.data);
         if (prods.data) setProducts(prods.data);
-        if (bans.data) setBanners(bans.data);
+        if (bans.data) {
+          // Sort banners by sort_order in memory so it doesn't crash if column doesn't exist yet
+          const sortedBans = bans.data.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+          setBanners(sortedBans);
+        }
 
       } catch (err: any) {
         setError(err.message);
@@ -157,9 +161,9 @@ export default function ClientHome() {
         <motion.div 
           exit={{ opacity: 0, y: -50 }}
           transition={{ duration: 0.6, ease: "easeInOut" }}
-          className="min-h-screen bg-black flex flex-col items-center justify-center relative overflow-hidden"
+          className="min-h-screen bg-white flex flex-col items-center justify-center relative overflow-hidden"
         >
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-yellow-900/30 via-black to-black"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-yellow-200/30 via-amber-50 to-white"></div>
           
           <div className="relative z-10 flex flex-col items-center justify-center text-center px-4">
             {/* Logo Animator */}
@@ -167,7 +171,7 @@ export default function ClientHome() {
               initial={{ scale: 0.5, opacity: 0, rotate: -10 }}
               animate={{ scale: 1, opacity: 1, rotate: 0 }}
               transition={{ duration: 0.8, type: "spring", bounce: 0.5 }}
-              className="w-56 h-56 rounded-full shadow-[0_0_80px_rgba(255,184,0,0.4)] flex items-center justify-center p-2 mb-6 bg-black border border-yellow-500/20"
+              className="w-56 h-56 rounded-full shadow-[0_0_80px_rgba(255,184,0,0.4)] flex items-center justify-center p-2 mb-6 bg-white border border-yellow-500/20"
             >
                <img src="/img/logo/logo/logook.jfif" alt="TopeDeBar Logo" className="w-full h-full object-contain rounded-full" onError={(e) => {
                  e.currentTarget.style.display = 'none';
@@ -175,7 +179,7 @@ export default function ClientHome() {
                    (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'block';
                  }
                }} />
-               <h1 style={{display: 'none'}} className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-yellow-300 via-primary to-yellow-600 leading-tight">TOPE<br/><span className="text-xl text-white">DE</span><br/>BAR</h1>
+               <h1 style={{display: 'none'}} className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-yellow-300 via-primary to-yellow-600 leading-tight">TOPE<br/><span className="text-xl text-slate-900">DE</span><br/>BAR</h1>
             </motion.div>
 
             {/* Phrase 1 */}
@@ -183,7 +187,7 @@ export default function ClientHome() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1, duration: 0.5 }}
-              className="text-2xl font-bold text-white mb-2"
+              className="text-2xl font-bold text-slate-900 mb-2"
             >
               ¡Hacé tu pedido aquí!
             </motion.h2>
@@ -209,10 +213,10 @@ export default function ClientHome() {
   if (error || !empresa) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <div className="bg-surface p-8 rounded-3xl shadow-2xl text-center max-w-sm border border-slate-800">
+        <div className="bg-surface p-8 rounded-3xl shadow-2xl text-center max-w-sm border border-amber-200">
           <Info size={48} className="mx-auto text-primary mb-4" />
-          <h1 className="text-xl font-bold text-white mb-2">Ops! Algo salió mal</h1>
-          <p className="text-slate-400">{error}</p>
+          <h1 className="text-xl font-bold text-slate-900 mb-2">Ops! Algo salió mal</h1>
+          <p className="text-slate-600">{error}</p>
         </div>
       </div>
     );
@@ -246,12 +250,12 @@ export default function ClientHome() {
   ];
 
   return (
-    <div className="min-h-screen bg-background pb-24 font-sans text-slate-200">
+    <div className="min-h-screen bg-background pb-24 font-sans text-slate-800">
       {/* 1. HERO HEADER */}
-      <header className="bg-surface pt-8 pb-4 px-4 sticky top-0 z-40 border-b border-slate-800/50 backdrop-blur-xl bg-surface/80">
-        <div className="flex justify-between items-center mb-4">
+      <header className="bg-surface pt-8 pb-4 px-4 sticky top-0 z-40 border-b border-slate-200/50 backdrop-blur-xl bg-surface/80">
+         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-3">
-             <div className="w-14 h-14 bg-black rounded-full border border-primary/30 flex items-center justify-center shadow-lg shadow-primary/20 overflow-hidden">
+             <div className="w-14 h-14 bg-white rounded-full border border-primary/30 flex items-center justify-center shadow-lg shadow-primary/20 overflow-hidden">
                 <img src="/img/logo/logo/logook.jfif" alt="Logo" className="w-full h-full object-cover" onError={(e) => {
                   e.currentTarget.style.display = 'none';
                   if (e.currentTarget.nextElementSibling) {
@@ -261,11 +265,31 @@ export default function ClientHome() {
                 <span style={{display: 'none'}} className="text-sm font-black text-primary leading-none text-center">TdB</span>
              </div>
              <div>
-               <h1 className="text-xl font-black tracking-tight text-white">{empresa.name}</h1>
-               <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
-                 <span className="flex items-center gap-1"><MapPin size={10} className="text-primary"/> Envío a Domicilio</span>
+               <h1 className="text-xl font-black tracking-tight text-slate-900 font-display">{empresa.name}</h1>
+               <div className="flex items-center gap-2 text-xs font-medium text-slate-600">
+                 <span className="flex items-center gap-1"><MapPin size={10} className="text-secondary"/> Envío a Domicilio</span>
                </div>
              </div>
+          </div>
+          
+          {/* Social / Location Links */}
+          <div className="flex items-center gap-2">
+            <a 
+              href="https://www.instagram.com/topedebar/?utm_source=ig_web_button_share_sheet" 
+              target="_blank" 
+              rel="noreferrer"
+              className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 hover:text-primary hover:bg-slate-200 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+            </a>
+            <a 
+              href="https://www.google.com/maps?q=Tope+de+Bar,+Eduardo+Bulnes+1978,+T4000+San+Miguel+de+Tucum%C3%A1n,+Tucum%C3%A1n&ftid=0x94225d0060392739:0x97bef3e6c4a313cf&entry=gps&shh=CAE&lucs=,94297699,94284469,94231188,94280568,47071704,94218641,94282134,94286869&g_ep=CAISEjI2LjE3LjIuOTAyNzg4MTI0MBgAIIgnKkgsOTQyOTc2OTksOTQyODQ0NjksOTQyMzExODgsOTQyODA1NjgsNDcwNzE3MDQsOTQyMTg2NDEsOTQyODIxMzQsOTQyODY4NjlCAkFS&skid=88df0512-f3aa-483b-82d8-d4d4a970d76a&g_st=ic" 
+              target="_blank" 
+              rel="noreferrer"
+              className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 hover:text-secondary hover:bg-slate-200 transition-colors"
+            >
+              <MapPin size={20} />
+            </a>
           </div>
         </div>
 
@@ -277,7 +301,7 @@ export default function ClientHome() {
             placeholder="¿Qué vas a pedir hoy?" 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-black/50 border border-slate-700 text-white rounded-2xl py-3 pl-12 pr-4 shadow-inner outline-none focus:border-primary transition-all text-sm placeholder:text-slate-500"
+            className="w-full bg-white/50 border border-amber-300 text-slate-900 rounded-2xl py-3 pl-12 pr-4 shadow-inner outline-none focus:border-primary transition-all text-sm placeholder:text-slate-500"
           />
         </div>
 
@@ -307,15 +331,15 @@ export default function ClientHome() {
           <section className="px-4 py-2 mt-2">
             <button 
               onClick={handleReorder}
-              className="w-full bg-gradient-to-r from-slate-900 to-black border border-primary/50 p-4 rounded-2xl flex items-center justify-between shadow-lg"
+              className="w-full bg-gradient-to-r from-amber-100 to-white border border-primary/50 p-4 rounded-2xl flex items-center justify-between shadow-lg"
             >
               <div className="flex items-center gap-3 text-left">
                 <div className="bg-primary/20 p-2 rounded-full text-primary">
                   <RotateCcw size={20} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-white text-sm">Pedir lo mismo de nuevo</h3>
-                  <p className="text-xs text-slate-400">Tu último pedido fue increíble.</p>
+                  <h3 className="font-bold text-slate-900 text-sm">Pedir lo mismo de nuevo</h3>
+                  <p className="text-xs text-slate-600">Tu último pedido fue increíble.</p>
                 </div>
               </div>
               <ChevronRight size={20} className="text-primary" />
@@ -343,7 +367,7 @@ export default function ClientHome() {
                     href={banner.link || '#'} 
                     target="_blank"
                     rel="noreferrer"
-                    className="shrink-0 w-[85vw] max-w-[320px] md:w-80 h-40 rounded-3xl overflow-hidden relative border border-slate-800 shadow-xl block bg-black snap-center"
+                    className="shrink-0 w-[85vw] max-w-[320px] md:w-80 h-40 rounded-3xl overflow-hidden relative border border-amber-200 shadow-xl block bg-white snap-center"
                   >
                     <img 
                       src={banner.image_url} 
@@ -366,12 +390,12 @@ export default function ClientHome() {
         {/* 3. CATEGORY SELECTOR (App Style Layout) */}
         {!searchQuery && (
            <section className="pl-4 mb-8">
-              <h2 className="text-lg font-bold text-white mb-3 pr-4">Categorías</h2>
+              <h2 className="text-lg font-bold text-slate-900 mb-3 pr-4">Categorías</h2>
               
               <div className="flex overflow-x-auto hide-scrollbar gap-3 pr-4 pb-2">
                 <button
                   onClick={() => setActiveCategory('todas')}
-                  className={`shrink-0 w-24 h-28 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all ${activeCategory === 'todas' ? 'bg-primary text-black shadow-lg shadow-primary/20' : 'bg-surface border border-slate-800 text-slate-300 hover:bg-slate-800'}`}
+                  className={`shrink-0 w-24 h-28 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all ${activeCategory === 'todas' ? 'bg-primary text-black shadow-lg shadow-primary/20' : 'bg-surface border border-amber-200 text-slate-700 hover:bg-amber-100'}`}
                 >
                   <Star size={24} className={activeCategory === 'todas' ? 'text-black' : 'text-primary'} />
                   <span className="text-xs font-bold">Todas</span>
@@ -389,7 +413,7 @@ export default function ClientHome() {
                     <div className="absolute -right-4 -top-4 opacity-20 text-[80px] z-0">🔥</div>
                     <div className="relative z-10 text-left">
                       <span className="text-3xl mb-1 block">{promosCategory.icon}</span>
-                      <span className="text-sm font-black uppercase tracking-wider text-white drop-shadow-md">Promociones</span>
+                      <span className="text-sm font-black uppercase tracking-wider text-slate-900 drop-shadow-md">Promociones</span>
                     </div>
                   </motion.button>
                 )}
@@ -399,7 +423,7 @@ export default function ClientHome() {
                   <button
                     key={cat.id}
                     onClick={() => setActiveCategory(cat.id)}
-                    className={`shrink-0 w-24 h-28 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all ${activeCategory === cat.id ? 'bg-primary text-black shadow-lg shadow-primary/20' : 'bg-surface border border-slate-800 text-slate-300 hover:bg-slate-800'}`}
+                    className={`shrink-0 w-24 h-28 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all ${activeCategory === cat.id ? 'bg-primary text-black shadow-lg shadow-primary/20' : 'bg-surface border border-amber-200 text-slate-700 hover:bg-amber-100'}`}
                   >
                     <span className="text-3xl drop-shadow-sm">{cat.icon}</span>
                     <span className="text-[10px] font-bold uppercase tracking-wider text-center px-1 truncate w-full">{cat.name}</span>
@@ -427,7 +451,7 @@ export default function ClientHome() {
 
             return (
               <div key={category.id} className="mb-10">
-                <h2 className="text-2xl font-black text-white mb-4 flex items-center gap-2">
+                <h2 className="text-2xl font-black text-slate-900 mb-4 flex items-center gap-2">
                   <span>{category.icon}</span> {category.name}
                   {isPromo && <span className="bg-primary text-black text-[10px] px-2 py-0.5 rounded-sm font-black uppercase tracking-widest ml-2">Especial</span>}
                 </h2>
@@ -443,17 +467,17 @@ export default function ClientHome() {
                         transition={{ delay: idx * 0.05 }}
                         key={product.id} 
                         onClick={() => setSelectedProduct(product)}
-                        className="bg-surface rounded-2xl border border-slate-800/80 p-3 flex gap-4 relative cursor-pointer active:scale-[0.98] transition-transform"
+                        className="bg-surface rounded-2xl border border-slate-200/80 p-3 flex gap-4 relative cursor-pointer active:scale-[0.98] transition-transform"
                       >
                         {/* Text Content Area (Left) */}
                         <div className="flex-1 flex flex-col justify-between">
                           <div>
-                            <h3 className="font-bold text-white text-[15px] leading-tight mb-1 pr-2">{product.name}</h3>
-                            <p className="text-xs text-slate-400 line-clamp-2 mb-2 leading-relaxed">{product.description}</p>
+                            <h3 className="font-bold text-slate-900 text-[15px] leading-tight mb-1 pr-2">{product.name}</h3>
+                            <p className="text-xs text-slate-600 line-clamp-2 mb-2 leading-relaxed">{product.description}</p>
                           </div>
                           
                           <div className="flex items-center gap-3 mt-1">
-                            <span className="font-black text-white text-base tracking-tight">${product.price.toLocaleString('es-AR')}</span>
+                            <span className="font-black text-slate-900 text-base tracking-tight">${product.price.toLocaleString('es-AR')}</span>
                             {qty > 0 && (
                               <span className="bg-primary/20 text-primary font-bold text-[10px] px-2 py-0.5 rounded-md border border-primary/30 uppercase tracking-wider">
                                 {qty} en pedido
@@ -463,7 +487,7 @@ export default function ClientHome() {
                         </div>
 
                         {/* Image & Add Button Area (Right) */}
-                        <div className="w-28 h-28 shrink-0 bg-black rounded-xl relative overflow-hidden shadow-inner border border-slate-800">
+                        <div className="w-28 h-28 shrink-0 bg-white rounded-xl relative overflow-hidden shadow-inner border border-amber-200">
                            <img 
                              src={product.image_url || `https://images.unsplash.com/photo-1550547660-d9450f859349?w=400&q=80`} 
                              alt={product.name}
@@ -486,9 +510,9 @@ export default function ClientHome() {
           })}
 
           {filteredProducts.length === 0 && (
-            <div className="text-center py-16 bg-surface rounded-3xl border border-slate-800">
+            <div className="text-center py-16 bg-surface rounded-3xl border border-amber-200">
               <Search size={48} className="mx-auto text-slate-600 mb-4" />
-              <p className="text-lg font-bold text-slate-300">No encontramos nada</p>
+              <p className="text-lg font-bold text-slate-700">No encontramos nada</p>
               <p className="text-slate-500 text-sm">Prueba buscando con otras palabras.</p>
             </div>
           )}
@@ -509,7 +533,7 @@ export default function ClientHome() {
               className="w-full bg-primary text-black p-4 rounded-2xl shadow-[0_10px_30px_-10px_rgba(255,184,0,0.6)] flex items-center justify-between transition-transform active:scale-95 border border-primary/50"
             >
               <div className="flex items-center gap-3">
-                <div className="bg-black text-primary w-10 h-10 rounded-full flex items-center justify-center font-black text-lg shadow-inner">
+                <div className="bg-white text-primary w-10 h-10 rounded-full flex items-center justify-center font-black text-lg shadow-inner">
                   {cartItemCount}
                 </div>
                 <span className="font-black text-lg tracking-tight uppercase">Ver mi pedido</span>

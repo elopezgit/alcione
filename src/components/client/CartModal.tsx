@@ -97,7 +97,7 @@ export default function CartModal({ empresaId, empresaName, empresaPhone, onOrde
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsCartOpen(false)}
-            className="fixed inset-0 bg-black/80 z-[100] backdrop-blur-sm"
+            className="fixed inset-0 bg-white/80 z-[100] backdrop-blur-sm"
           />
 
           <motion.div
@@ -105,15 +105,15 @@ export default function CartModal({ empresaId, empresaName, empresaPhone, onOrde
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed bottom-0 left-0 right-0 top-12 md:top-auto md:bottom-4 md:left-1/2 md:-translate-x-1/2 md:max-w-2xl md:h-[85vh] bg-surface z-[101] rounded-t-3xl md:rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-slate-800"
+            className="fixed bottom-0 left-0 right-0 top-12 md:top-auto md:bottom-4 md:left-1/2 md:-translate-x-1/2 md:max-w-2xl md:h-[85vh] bg-surface z-[101] rounded-t-3xl md:rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-amber-200"
           >
-            <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-surface shrink-0">
-              <h2 className="text-xl font-black text-white flex items-center gap-2">
+            <div className="p-5 border-b border-amber-200 flex items-center justify-between bg-surface shrink-0">
+              <h2 className="text-xl font-black text-slate-900 flex items-center gap-2">
                 <Receipt size={22} className="text-primary" /> Mi Pedido
               </h2>
               <button 
                 onClick={() => setIsCartOpen(false)}
-                className="p-2 bg-slate-800 text-slate-300 rounded-full hover:bg-slate-700 transition-colors"
+                className="p-2 bg-amber-100 text-slate-700 rounded-full hover:bg-slate-700 transition-colors"
               >
                 <X size={20} />
               </button>
@@ -129,23 +129,23 @@ export default function CartModal({ empresaId, empresaName, empresaPhone, onOrde
               ) : (
                 <div className="p-5 space-y-6">
                   {/* Items List */}
-                  <div className="bg-surface rounded-2xl p-4 border border-slate-800 space-y-4">
+                  <div className="bg-surface rounded-2xl p-4 border border-amber-200 space-y-4">
                     {items.map((item, idx) => (
-                      <div key={idx} className="flex gap-4 items-start border-b border-slate-800 pb-4 last:border-0 last:pb-0">
+                      <div key={idx} className="flex gap-4 items-start border-b border-amber-200 pb-4 last:border-0 last:pb-0">
                         <div className="flex-1">
-                          <h4 className="font-bold text-white text-lg">{item.name}</h4>
+                          <h4 className="font-bold text-slate-900 text-lg">{item.name}</h4>
                           {item.notes && <p className="text-xs text-primary mt-1 italic">"{item.notes}"</p>}
-                          <div className="text-slate-300 font-bold mt-1">${(item.price * item.quantity).toLocaleString('es-AR')}</div>
+                          <div className="text-slate-700 font-bold mt-1">${(item.price * item.quantity).toLocaleString('es-AR')}</div>
                         </div>
                         <div className="flex flex-col items-end gap-3">
                           <button onClick={() => removeFromCart(item.id, item.notes)} className="text-slate-500 hover:text-red-500 transition-colors">
                             <Trash2 size={18} />
                           </button>
-                          <div className="flex items-center gap-3 bg-black rounded-full border border-slate-700 p-1">
-                            <button onClick={() => updateQuantity(item.id, item.quantity - 1, item.notes)} className="w-7 h-7 flex items-center justify-center bg-surface rounded-full shadow-sm text-slate-300">
+                          <div className="flex items-center gap-3 bg-white rounded-full border border-amber-300 p-1">
+                            <button onClick={() => updateQuantity(item.id, item.quantity - 1, item.notes)} className="w-7 h-7 flex items-center justify-center bg-surface rounded-full shadow-sm text-slate-700">
                               <Minus size={14} />
                             </button>
-                            <span className="font-bold text-sm w-4 text-center text-white">{item.quantity}</span>
+                            <span className="font-bold text-sm w-4 text-center text-slate-900">{item.quantity}</span>
                             <button onClick={() => updateQuantity(item.id, item.quantity + 1, item.notes)} className="w-7 h-7 flex items-center justify-center bg-primary rounded-full shadow-sm text-black">
                               <Plus size={14} />
                             </button>
@@ -156,44 +156,44 @@ export default function CartModal({ empresaId, empresaName, empresaPhone, onOrde
                   </div>
 
                   {/* Checkout Form */}
-                  <form id="checkout-form" onSubmit={handleSubmit} className="bg-surface rounded-2xl p-5 border border-slate-800 space-y-4">
-                    <h3 className="font-bold text-white mb-2 border-b border-slate-800 pb-2">Tus Datos</h3>
+                  <form id="checkout-form" onSubmit={handleSubmit} className="bg-surface rounded-2xl p-5 border border-amber-200 space-y-4">
+                    <h3 className="font-bold text-slate-900 mb-2 border-b border-amber-200 pb-2">Tus Datos</h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-xs font-bold text-slate-400 mb-1">Nombre y Apellido</label>
-                        <input required type="text" value={customerName} onChange={e => setCustomerName(e.target.value)} className="w-full bg-black border border-slate-700 rounded-xl p-3 text-sm text-white focus:ring-2 focus:ring-primary outline-none" placeholder="Juan Pérez" />
+                        <label className="block text-xs font-bold text-slate-600 mb-1">Nombre y Apellido</label>
+                        <input required type="text" value={customerName} onChange={e => setCustomerName(e.target.value)} className="w-full bg-white border border-amber-300 rounded-xl p-3 text-sm text-slate-900 focus:ring-2 focus:ring-primary outline-none" placeholder="Juan Pérez" />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-slate-400 mb-1">Teléfono (WhatsApp)</label>
-                        <input required type="tel" value={customerPhone} onChange={e => setCustomerPhone(e.target.value)} className="w-full bg-black border border-slate-700 rounded-xl p-3 text-sm text-white focus:ring-2 focus:ring-primary outline-none" placeholder="381 123 4567" />
+                        <label className="block text-xs font-bold text-slate-600 mb-1">Teléfono (WhatsApp)</label>
+                        <input required type="tel" value={customerPhone} onChange={e => setCustomerPhone(e.target.value)} className="w-full bg-white border border-amber-300 rounded-xl p-3 text-sm text-slate-900 focus:ring-2 focus:ring-primary outline-none" placeholder="381 123 4567" />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-400 mb-1 flex items-center gap-1"><MapPin size={14} /> Dirección de Envío</label>
-                      <input type="text" value={deliveryAddress} onChange={e => setDeliveryAddress(e.target.value)} className="w-full bg-black border border-slate-700 rounded-xl p-3 text-sm text-white focus:ring-2 focus:ring-primary outline-none" placeholder="Calle Falsa 123 (Opcional si retira)" />
+                      <label className="block text-xs font-bold text-slate-600 mb-1 flex items-center gap-1"><MapPin size={14} /> Dirección de Envío</label>
+                      <input type="text" value={deliveryAddress} onChange={e => setDeliveryAddress(e.target.value)} className="w-full bg-white border border-amber-300 rounded-xl p-3 text-sm text-slate-900 focus:ring-2 focus:ring-primary outline-none" placeholder="Calle Falsa 123 (Opcional si retira)" />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-slate-400 mb-1">Comentarios Generales</label>
-                      <textarea value={comment} onChange={e => setComment(e.target.value)} className="w-full bg-black border border-slate-700 rounded-xl p-3 text-sm text-white focus:ring-2 focus:ring-primary outline-none resize-none h-16" placeholder="Ej: Pago con $10000, timbre no funciona, etc." />
+                      <label className="block text-xs font-bold text-slate-600 mb-1">Comentarios Generales</label>
+                      <textarea value={comment} onChange={e => setComment(e.target.value)} className="w-full bg-white border border-amber-300 rounded-xl p-3 text-sm text-slate-900 focus:ring-2 focus:ring-primary outline-none resize-none h-16" placeholder="Ej: Pago con $10000, timbre no funciona, etc." />
                     </div>
 
-                    <div className="pt-4 border-t border-slate-800">
-                      <label className="block text-xs font-bold text-slate-400 mb-3">Método de Pago</label>
+                    <div className="pt-4 border-t border-amber-200">
+                      <label className="block text-xs font-bold text-slate-600 mb-3">Método de Pago</label>
                       <div className="grid grid-cols-2 gap-3">
                         <button 
                           type="button" 
                           onClick={() => setPaymentMethod('efectivo')}
-                          className={`flex items-center justify-center gap-2 p-3 rounded-xl font-bold text-sm transition-all border ${paymentMethod === 'efectivo' ? 'bg-primary border-primary text-black' : 'bg-black border-slate-700 text-slate-400 hover:bg-slate-800'}`}
+                          className={`flex items-center justify-center gap-2 p-3 rounded-xl font-bold text-sm transition-all border ${paymentMethod === 'efectivo' ? 'bg-primary border-primary text-black' : 'bg-white border-amber-300 text-slate-600 hover:bg-amber-100'}`}
                         >
                           <Wallet size={18} /> Efectivo
                         </button>
                         <button 
                           type="button" 
                           onClick={() => setPaymentMethod('transferencia')}
-                          className={`flex items-center justify-center gap-2 p-3 rounded-xl font-bold text-sm transition-all border ${paymentMethod === 'transferencia' ? 'bg-primary border-primary text-black' : 'bg-black border-slate-700 text-slate-400 hover:bg-slate-800'}`}
+                          className={`flex items-center justify-center gap-2 p-3 rounded-xl font-bold text-sm transition-all border ${paymentMethod === 'transferencia' ? 'bg-primary border-primary text-black' : 'bg-white border-amber-300 text-slate-600 hover:bg-amber-100'}`}
                         >
                           <CreditCard size={18} /> Transferencia
                         </button>
@@ -209,12 +209,12 @@ export default function CartModal({ empresaId, empresaName, empresaPhone, onOrde
                             Datos para Transferencia
                           </div>
                           <div className="p-4 flex flex-col gap-2">
-                            <div className="flex justify-between items-center bg-black/50 p-3 rounded-lg border border-yellow-500/20">
-                              <span className="text-xs text-slate-400">Titular</span>
-                              <span className="text-sm font-bold text-white">ADRIÁN R. DÍAZ</span>
+                            <div className="flex justify-between items-center bg-white/50 p-3 rounded-lg border border-yellow-500/20">
+                              <span className="text-xs text-slate-600">Titular</span>
+                              <span className="text-sm font-bold text-slate-900">ADRIÁN R. DÍAZ</span>
                             </div>
-                            <div className="flex justify-between items-center bg-black/50 p-3 rounded-lg border border-yellow-500/20">
-                              <span className="text-xs text-slate-400">Alias</span>
+                            <div className="flex justify-between items-center bg-white/50 p-3 rounded-lg border border-yellow-500/20">
+                              <span className="text-xs text-slate-600">Alias</span>
                               <div className="flex items-center gap-2">
                                 <span className="text-sm font-black text-primary tracking-wider">TOPEDE.BAR</span>
                                 <button
@@ -241,10 +241,10 @@ export default function CartModal({ empresaId, empresaName, empresaPhone, onOrde
 
             {/* Footer Total & Button */}
             {items.length > 0 && (
-              <div className="p-5 border-t border-slate-800 bg-surface shrink-0">
+              <div className="p-5 border-t border-amber-200 bg-surface shrink-0">
                 <div className="flex justify-between items-center mb-4">
-                  <span className="text-slate-400 font-bold">Total a pagar</span>
-                  <span className="text-3xl font-black text-white">${total.toLocaleString('es-AR')}</span>
+                  <span className="text-slate-600 font-bold">Total a pagar</span>
+                  <span className="text-3xl font-black text-slate-900">${total.toLocaleString('es-AR')}</span>
                 </div>
                 <button 
                   type="submit"

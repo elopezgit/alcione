@@ -7,6 +7,7 @@ interface Banner {
   image_url: string;
   link?: string;
   is_active: boolean;
+  sort_order?: number;
 }
 
 export default function BannerManager({ empresaSlug }: { empresaSlug: string }) {
@@ -14,7 +15,7 @@ export default function BannerManager({ empresaSlug }: { empresaSlug: string }) 
   const [banners, setBanners] = useState<Banner[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBanner, setEditingBanner] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ image_url: '', link: '' });
+  const [formData, setFormData] = useState({ image_url: '', link: '', sort_order: 0 });
 
   useEffect(() => {
     async function init() {
@@ -28,8 +29,15 @@ export default function BannerManager({ empresaSlug }: { empresaSlug: string }) 
   }, [empresaSlug]);
 
   const fetchBanners = async (id: string) => {
-    const { data } = await supabase.from('banners').select('*').eq('empresa_id', id).order('created_at');
-    if (data) setBanners(data);
+    // Intentar ordenar por sort_order, y si falla (columna inexistente), caer en created_at
+    const { data, error } = await supabase.from('banners').select('*').eq('empresa_id', id).order('sort_order', { ascending: true, nullsFirst: false });
+    
+    if (error && error.message.includes('sort_order')) {
+      const fallback = await supabase.from('banners').select('*').eq('empresa_id', id).order('created_at');
+      if (fallback.data) setBanners(fallback.data);
+    } else if (data) {
+      setBanners(data);
+    }
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -37,19 +45,20 @@ export default function BannerManager({ empresaSlug }: { empresaSlug: string }) 
     if (!empresaId) return;
 
     let error;
+    const payload = {
+        image_url: formData.image_url,
+        link: formData.link || null,
+        sort_order: formData.sort_order
+    };
 
     if (editingBanner) {
-      const { error: updateError } = await supabase.from('banners').update({
-        image_url: formData.image_url,
-        link: formData.link || null
-      }).eq('id', editingBanner);
+      const { error: updateError } = await supabase.from('banners').update(payload).eq('id', editingBanner);
       error = updateError;
     } else {
       const { error: insertError } = await supabase.from('banners').insert({
         empresa_id: empresaId,
-        image_url: formData.image_url,
-        link: formData.link || null,
-        is_active: true
+        is_active: true,
+        ...payload
       });
       error = insertError;
     }
@@ -57,22 +66,26 @@ export default function BannerManager({ empresaSlug }: { empresaSlug: string }) 
     if (!error) {
       setIsModalOpen(false);
       setEditingBanner(null);
-      setFormData({ image_url: '', link: '' });
+      setFormData({ image_url: '', link: '', sort_order: 0 });
       fetchBanners(empresaId);
     } else {
-      alert("Error al guardar: " + error.message);
+      if (error.message.includes('sort_order')) {
+         alert("Error: Tu base de datos no tiene la columna 'sort_order' en la tabla 'banners'. Por favor créala en Supabase (tipo int4) u omite usarla por ahora.");
+      } else {
+         alert("Error al guardar: " + error.message);
+      }
     }
   };
 
   const openNewModal = () => {
     setEditingBanner(null);
-    setFormData({ image_url: '', link: '' });
+    setFormData({ image_url: '', link: '', sort_order: banners.length });
     setIsModalOpen(true);
   };
 
   const handleEdit = (banner: Banner) => {
     setEditingBanner(banner.id);
-    setFormData({ image_url: banner.image_url, link: banner.link || '' });
+    setFormData({ image_url: banner.image_url, link: banner.link || '', sort_order: banner.sort_order || 0 });
     setIsModalOpen(true);
   };
 
@@ -143,13 +156,18 @@ export default function BannerManager({ empresaSlug }: { empresaSlug: string }) 
             <form onSubmit={handleSave} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">URL de la Imagen</label>
-                <input required type="url" placeholder="https://..." value={formData.image_url} onChange={e => setFormData({...formData, image_url: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg" />
+                <input required type="url" placeholder="https://..." value={formData.image_url} onChange={e => setFormData({...formData, image_url: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg text-slate-900 bg-white focus:outline-none focus:border-primary" />
                 <p className="text-xs text-slate-500 mt-1">Debe ser un link directo a una imagen (jpg, png, webp).</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">URL de Destino (Opcional)</label>
-                <input type="url" placeholder="https://..." value={formData.link} onChange={e => setFormData({...formData, link: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg" />
+                <input type="url" placeholder="https://..." value={formData.link} onChange={e => setFormData({...formData, link: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg text-slate-900 bg-white focus:outline-none focus:border-primary" />
                 <p className="text-xs text-slate-500 mt-1">A dónde irá el cliente si hace clic en el banner.</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Orden de Aparición</label>
+                <input type="number" min="0" value={formData.sort_order} onChange={e => setFormData({...formData, sort_order: parseInt(e.target.value) || 0})} className="w-full p-2 border border-slate-200 rounded-lg text-slate-900 bg-white focus:outline-none focus:border-primary" />
+                <p className="text-xs text-slate-500 mt-1">Un número menor (0, 1, 2) aparece primero en el carrusel.</p>
               </div>
               <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition-colors">Cancelar</button>

@@ -53,7 +53,7 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/80 z-[100] backdrop-blur-sm"
+            className="fixed inset-0 bg-white/80 z-[100] backdrop-blur-sm"
           />
 
           <motion.div
@@ -61,7 +61,7 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed bottom-0 left-0 right-0 z-[101] bg-surface rounded-t-3xl overflow-hidden flex flex-col max-h-[90vh] md:max-w-md md:mx-auto md:bottom-4 md:rounded-3xl shadow-2xl border border-slate-800"
+            className="fixed bottom-0 left-0 right-0 z-[101] bg-surface rounded-t-3xl overflow-hidden flex flex-col max-h-[90vh] md:max-w-md md:mx-auto md:bottom-4 md:rounded-3xl shadow-2xl border border-amber-200"
           >
             <div className="relative h-64 bg-slate-900 shrink-0">
               <img 
@@ -72,39 +72,39 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
               <div className="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
               <button 
                 onClick={onClose}
-                className="absolute top-4 right-4 p-2 bg-black/60 text-white rounded-full backdrop-blur-md hover:bg-black transition-colors"
+                className="absolute top-4 right-4 p-2 bg-white/60 text-slate-900 rounded-full backdrop-blur-md hover:bg-white transition-colors"
               >
                 <X size={20} />
               </button>
             </div>
 
             <div className="flex-1 overflow-y-auto hide-scrollbar p-6 bg-surface">
-              <h2 className="text-2xl font-black text-white mb-2">{product.name}</h2>
-              <p className="text-slate-400 leading-relaxed mb-6">
+              <h2 className="text-2xl font-black text-slate-900 mb-2">{product.name}</h2>
+              <p className="text-slate-600 leading-relaxed mb-6">
                 {product.description || 'Una deliciosa opción preparada con los mejores ingredientes, ideal para compartir o disfrutar a solas.'}
               </p>
 
               <div className="mb-8">
-                <label className="block text-sm font-bold text-slate-300 mb-2">Instrucciones Especiales</label>
+                <label className="block text-sm font-bold text-slate-700 mb-2">Instrucciones Especiales</label>
                 <textarea 
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder={getPlaceholder(product.name)}
-                  className="w-full bg-black border border-slate-700 rounded-xl p-3 text-sm text-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none h-20"
+                  className="w-full bg-white border border-amber-300 rounded-xl p-3 text-sm text-slate-900 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none h-20"
                 />
               </div>
             </div>
 
-            <div className="p-6 border-t border-slate-800 bg-surface shrink-0">
+            <div className="p-6 border-t border-amber-200 bg-surface shrink-0">
               <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-4 bg-black rounded-full p-1 border border-slate-700">
+                <div className="flex items-center gap-4 bg-white rounded-full p-1 border border-amber-300">
                   <button 
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-10 h-10 flex items-center justify-center bg-surface rounded-full shadow-sm text-slate-300 active:scale-95 transition-transform"
+                    className="w-10 h-10 flex items-center justify-center bg-surface rounded-full shadow-sm text-slate-700 active:scale-95 transition-transform"
                   >
                     <Minus size={18} />
                   </button>
-                  <span className="font-bold w-4 text-center text-white">{quantity}</span>
+                  <span className="font-bold w-4 text-center text-slate-900">{quantity}</span>
                   <button 
                     onClick={() => setQuantity(quantity + 1)}
                     className="w-10 h-10 flex items-center justify-center bg-primary rounded-full shadow-sm text-black active:scale-95 transition-transform"
@@ -112,7 +112,7 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
                     <Plus size={18} />
                   </button>
                 </div>
-                <div className="text-2xl font-black text-white">
+                <div className="text-2xl font-black text-slate-900">
                   ${(product.price * quantity).toLocaleString('es-AR')}
                 </div>
               </div>
