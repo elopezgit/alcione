@@ -63,6 +63,28 @@ export default function KanbanBoard({ empresaSlug }: { empresaSlug: string }) {
     setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
   };
 
+  const deleteOrder = async (orderId: string) => {
+    if (confirm('¿Estás seguro de que deseas eliminar este pedido? Esta acción no se puede deshacer.')) {
+      const { error } = await supabase.from('orders').delete().eq('id', orderId);
+      if (!error) {
+        setOrders(prev => prev.filter(o => o.id !== orderId));
+        setSelectedOrder(null);
+      } else {
+        alert('Error al eliminar el pedido.');
+      }
+    }
+  };
+
+  const updateOrderData = async (orderId: string, updatedData: any) => {
+    const { error } = await supabase.from('orders').update(updatedData).eq('id', orderId);
+    if (!error) {
+      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, ...updatedData } : o));
+      setSelectedOrder(prev => prev ? { ...prev, ...updatedData } : null);
+    } else {
+      alert('Error al actualizar el pedido.');
+    }
+  };
+
   const onDragEnd = async (result: DropResult) => {
     if (!result.destination || !empresaId) return;
 
@@ -179,6 +201,8 @@ export default function KanbanBoard({ empresaSlug }: { empresaSlug: string }) {
           order={selectedOrder}
           onClose={() => setSelectedOrder(null)}
           onStatusChange={updateOrderStatus}
+          onDelete={() => deleteOrder(selectedOrder.id)}
+          onUpdate={(updatedData) => updateOrderData(selectedOrder.id, updatedData)}
         />
       )}
     </div>
