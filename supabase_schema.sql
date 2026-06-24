@@ -31,6 +31,7 @@ create table products (
   description text,
   price numeric not null,
   image_url text,
+  code text,
   is_active boolean default true,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );

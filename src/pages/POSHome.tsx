@@ -17,6 +17,7 @@ interface Product {
   category_id: string;
   image_url?: string;
   is_active: boolean;
+  code?: string;
 }
 
 export default function POSHome({ empresaSlug }: { empresaSlug: string }) {
@@ -28,6 +29,7 @@ export default function POSHome({ empresaSlug }: { empresaSlug: string }) {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<string | 'todas'>('todas');
+  const [fastCode, setFastCode] = useState('');
   
   // Checkout states
   const [paymentMethod, setPaymentMethod] = useState<'efectivo' | 'transferencia'>('efectivo');
@@ -78,6 +80,20 @@ export default function POSHome({ empresaSlug }: { empresaSlug: string }) {
     return items.filter(i => i.id === productId).reduce((acc, curr) => acc + curr.quantity, 0);
   };
 
+  const handleFastCodeSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      if (!fastCode.trim()) return;
+      const codeToSearch = fastCode.trim().toLowerCase();
+      const prod = products.find(p => p.code?.toLowerCase() === codeToSearch);
+      if (prod) {
+        addToCart(prod, 1);
+        setFastCode('');
+      } else {
+        alert('Producto no encontrado con el código: ' + codeToSearch);
+      }
+    }
+  };
+
   const handleSubmitOrder = async () => {
     if (!empresaId || items.length === 0) return;
     setIsSubmitting(true);
@@ -120,15 +136,27 @@ export default function POSHome({ empresaSlug }: { empresaSlug: string }) {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header & Filters */}
         <div className="bg-white p-4 shadow-sm z-10">
-          <div className="relative mb-4">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-            <input 
-              type="text" 
-              placeholder="Buscar producto..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl py-3 pl-10 pr-4 outline-none focus:border-primary transition-colors"
-            />
+          <div className="flex gap-2 mb-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+              <input 
+                type="text" 
+                placeholder="Buscar producto..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl py-3 pl-10 pr-4 outline-none focus:border-primary transition-colors"
+              />
+            </div>
+            <div className="relative w-48">
+              <input 
+                type="text" 
+                placeholder="Cód. Rápido + Enter" 
+                value={fastCode}
+                onChange={(e) => setFastCode(e.target.value)}
+                onKeyDown={handleFastCodeSubmit}
+                className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl py-3 px-4 outline-none focus:border-primary transition-colors font-bold"
+              />
+            </div>
           </div>
 
           {/* Category Scroller */}

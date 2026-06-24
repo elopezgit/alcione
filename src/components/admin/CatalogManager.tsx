@@ -10,6 +10,7 @@ interface Product {
   category_id: string;
   is_active: boolean;
   image_url?: string;
+  code?: string;
 }
 
 interface Category {
@@ -23,7 +24,7 @@ export default function CatalogManager({ empresaSlug }: { empresaSlug: string })
   const [categories, setCategories] = useState<Category[]>([]);
   
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ id: '', name: '', description: '', price: '', category_id: '', image_url: '', is_active: true });
+  const [formData, setFormData] = useState({ id: '', name: '', description: '', price: '', category_id: '', image_url: '', code: '', is_active: true });
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -62,6 +63,7 @@ export default function CatalogManager({ empresaSlug }: { empresaSlug: string })
       price: parseFloat(formData.price),
       category_id: formData.category_id || null,
       image_url: formData.image_url || null,
+      code: formData.code || null,
       is_active: formData.is_active
     };
 
@@ -78,7 +80,7 @@ export default function CatalogManager({ empresaSlug }: { empresaSlug: string })
 
     if (!error) {
       setIsModalOpen(false);
-      setFormData({ id: '', name: '', description: '', price: '', category_id: '', image_url: '', is_active: true });
+      setFormData({ id: '', name: '', description: '', price: '', category_id: '', image_url: '', code: '', is_active: true });
       fetchData(empresaId);
     } else {
       alert("Error al guardar: " + error.message);
@@ -93,6 +95,7 @@ export default function CatalogManager({ empresaSlug }: { empresaSlug: string })
       price: p.price.toString(),
       category_id: p.category_id || '',
       image_url: p.image_url || '',
+      code: p.code || '',
       is_active: p.is_active
     });
     setIsModalOpen(true);
@@ -110,7 +113,9 @@ export default function CatalogManager({ empresaSlug }: { empresaSlug: string })
 
   // Filter and Sort Logic
   const filteredProducts = products.filter(p => {
-    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                          (p.code && p.code.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesCategory = filterCategory ? p.category_id === filterCategory : true;
     return matchesSearch && matchesCategory;
   }).sort((a, b) => {
@@ -128,7 +133,7 @@ export default function CatalogManager({ empresaSlug }: { empresaSlug: string })
         </div>
         <button 
           onClick={() => {
-            setFormData({ id: '', name: '', description: '', price: '', category_id: '', image_url: '', is_active: true });
+            setFormData({ id: '', name: '', description: '', price: '', category_id: '', image_url: '', code: '', is_active: true });
             setIsModalOpen(true);
           }}
           className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-lg shadow-sm font-medium transition-colors flex items-center gap-2"
@@ -189,7 +194,7 @@ export default function CatalogManager({ empresaSlug }: { empresaSlug: string })
                       <div className="w-10 h-10 rounded-lg bg-slate-200 shrink-0 flex items-center justify-center text-slate-400 text-xs">Sin foto</div>
                     )}
                     <div>
-                      <p className="font-semibold text-slate-800">{product.name}</p>
+                      <p className="font-semibold text-slate-800">{product.name} {product.code && <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full ml-1">Cod: {product.code}</span>}</p>
                       <p className="text-xs text-slate-500 truncate max-w-xs">{product.description}</p>
                     </div>
                   </td>
@@ -225,9 +230,15 @@ export default function CatalogManager({ empresaSlug }: { empresaSlug: string })
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
             <h3 className="text-xl font-bold mb-4 text-slate-800">{formData.id ? 'Editar Producto' : 'Agregar Producto'}</h3>
             <form onSubmit={handleSave} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Nombre</label>
-                <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:border-primary" />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Nombre</label>
+                  <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:border-primary" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Código (Opcional)</label>
+                  <input type="text" value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:border-primary" placeholder="Ej: 101, P01..." />
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Descripción</label>
