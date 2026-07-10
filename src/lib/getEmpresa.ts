@@ -13,7 +13,13 @@ export async function getEmpresaData(slug?: string): Promise<any | null> {
       .select('*')
       .eq('slug', slug)
       .maybeSingle();
-    if (data) return data;
+    if (data) {
+      if (slug === 'titanfuel' && data.phone !== '5493814751620') {
+        await supabase.from('empresas').update({ phone: '5493814751620' }).eq('id', data.id);
+        return { ...data, phone: '5493814751620' };
+      }
+      return data;
+    }
   }
 
   // 2. Si buscan 'titanfuel', buscar si en la base de datos está guardada bajo 'suplementosar'
@@ -24,16 +30,15 @@ export async function getEmpresaData(slug?: string): Promise<any | null> {
       .eq('slug', 'suplementosar')
       .maybeSingle();
     if (supleData) {
-      // Sincronizar automáticamente el slug a 'titanfuel' para futuras consultas
       await supabase
         .from('empresas')
-        .update({ slug: 'titanfuel', name: 'TITAN FUEL SUPLEMENTOS' })
+        .update({ slug: 'titanfuel', name: 'TITAN FUEL SUPLEMENTOS', phone: '5493814751620' })
         .eq('id', supleData.id);
-      return { ...supleData, slug: 'titanfuel', name: 'TITAN FUEL SUPLEMENTOS' };
+      return { ...supleData, slug: 'titanfuel', name: 'TITAN FUEL SUPLEMENTOS', phone: '5493814751620' };
     }
   }
 
-  // 3. Buscar específicamente la empresa de suplementos por nombre o rubro (TITAN / SUPLEMENTOS / LISA)
+  // 3. Buscar específicamente la empresa de suplementos por nombre o rubro
   const { data: nameMatch } = await supabase
     .from('empresas')
     .select('*')
@@ -42,14 +47,11 @@ export async function getEmpresaData(slug?: string): Promise<any | null> {
     .maybeSingle();
 
   if (nameMatch) {
-    if (slug === 'titanfuel' && nameMatch.slug !== 'titanfuel') {
-      await supabase
-        .from('empresas')
-        .update({ slug: 'titanfuel', name: 'TITAN FUEL SUPLEMENTOS' })
-        .eq('id', nameMatch.id);
-      return { ...nameMatch, slug: 'titanfuel', name: 'TITAN FUEL SUPLEMENTOS' };
-    }
-    return nameMatch;
+    await supabase
+      .from('empresas')
+      .update({ slug: 'titanfuel', name: 'TITAN FUEL SUPLEMENTOS', phone: '5493814751620' })
+      .eq('id', nameMatch.id);
+    return { ...nameMatch, slug: 'titanfuel', name: 'TITAN FUEL SUPLEMENTOS', phone: '5493814751620' };
   }
 
   return null;

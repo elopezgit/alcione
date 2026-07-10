@@ -866,7 +866,7 @@ export default function ClientHome() {
       <CartModal 
         empresaId={empresa.id} 
         empresaName={empresa.name} 
-        empresaPhone={empresa.phone} 
+        empresaPhone={empresa.phone || '5493814751620'} 
         onOrderPlaced={(id) => {
           setActiveOrderId(id);
           setIsTrackerOpen(true); // Open it immediately to surprise the user
