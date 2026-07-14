@@ -22,6 +22,18 @@
     letter-spacing: 0.03em;
     font-weight: 400;
   }
+
+  /* Focus visible global para accesibilidad */
+  :focus-visible {
+    outline: 2px solid #A12C25;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Smooth scroll global */
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 @layer utilities {
@@ -31,5 +43,48 @@
   }
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
+  }
+
+  /* Screen-reader only */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Focus ring personalizado MrCerdo */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A12C25]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAF8F5];
+  }
+
+  /* Scrollbar personalizada */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #D4D4D4;
+    border-radius: 9999px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #A8A29E;
+  }
+
+  /* Animaciones */
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 }

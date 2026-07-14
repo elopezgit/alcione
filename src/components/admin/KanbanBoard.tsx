@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { getEmpresaId } from '../../lib/getEmpresa';
 import { filterMrCerdoOrders } from '../../lib/defaultCatalog';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { ExternalLink } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import OrderDetailModal from './OrderDetailModal';
+import { useToast } from '../../hooks/useToast';
 
 interface Order {
   id: string;
@@ -30,13 +31,15 @@ const COLUMNS = [
 ];
 
 export default function KanbanBoard({ empresaSlug, role }: { empresaSlug: string, role?: string }) {
+  const toast = useToast();
   const [empresaId, setEmpresaId] = useState<string | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     async function init() {
-      const id = await getEmpresaId();
+      const id = await getEmpresaId(empresaSlug);
       if (id) {
         setEmpresaId(id);
         fetchOrders(id);
@@ -75,8 +78,9 @@ export default function KanbanBoard({ empresaSlug, role }: { empresaSlug: string
       if (!error) {
         setOrders(prev => prev.filter(o => o.id !== orderId));
         setSelectedOrder(null);
+        toast.success('Pedido eliminado', 'El pedido se eliminó correctamente.');
       } else {
-        alert('Error al eliminar el pedido.');
+        toast.error('Error', 'No se pudo eliminar el pedido.');
       }
     }
   };
@@ -86,10 +90,17 @@ export default function KanbanBoard({ empresaSlug, role }: { empresaSlug: string
     if (!error) {
       setOrders(prev => prev.map(o => o.id === orderId ? { ...o, ...updatedData } : o));
       setSelectedOrder(prev => prev ? { ...prev, ...updatedData } : null);
+      toast.success('Pedido actualizado', 'Los cambios se guardaron correctamente.');
     } else {
-      alert('Error al actualizar el pedido.');
+      toast.error('Error', 'No se pudo actualizar el pedido.');
     }
   };
+
+  const filteredOrders = orders.filter(order =>
+    searchTerm === '' ||
+    order.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    order.id.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const onDragEnd = async (result: DropResult) => {
     if (!result.destination || !empresaId) return;
@@ -112,21 +123,47 @@ export default function KanbanBoard({ empresaSlug, role }: { empresaSlug: string
 
   return (
     <div className="p-8 h-screen flex flex-col">
-      <header className="mb-8 flex justify-between items-end shrink-0">
+      <header className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 shrink-0">
         <div>
           <h2 className="text-3xl font-bold text-slate-800">Tablero de Pedidos</h2>
           <p className="text-slate-500 mt-1">Arrastra las tarjetas para cambiar su estado.</p>
         </div>
-        <button onClick={() => fetchOrders(empresaId)} className="text-sm bg-slate-200 hover:bg-slate-300 px-4 py-2 rounded font-medium transition-colors">
-          🔄 Refrescar
-        </button>
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="relative flex-1 sm:flex-initial sm:min-w-[220px]">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              placeholder="Buscar por nombre o ID..."
+              aria-label="Buscar pedidos por nombre de cliente o ID de orden"
+              className="w-full pl-9 pr-8 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all bg-white"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-slate-200 transition-colors focus-ring"
+                aria-label="Limpiar búsqueda"
+              >
+                <X size={14} className="text-slate-400" />
+              </button>
+            )}
+          </div>
+          <button
+            onClick={() => fetchOrders(empresaId)}
+            className="text-sm bg-slate-200 hover:bg-slate-300 px-4 py-2 rounded-lg font-medium transition-colors focus-ring"
+            aria-label="Refrescar pedidos"
+          >
+            🔄 Refrescar
+          </button>
+        </div>
       </header>
       
       <div className="flex-1 overflow-x-auto">
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="flex gap-6 h-full items-start min-w-max">
             {COLUMNS.map(col => {
-              const columnOrders = orders.filter(o => o.status === col.id);
+              const columnOrders = filteredOrders.filter(o => o.status === col.id);
               return (
                 <div key={col.id} className="w-80 bg-slate-200/50 rounded-xl p-4 flex flex-col max-h-full">
                   <div className="flex justify-between items-center mb-4">
@@ -148,8 +185,11 @@ export default function KanbanBoard({ empresaSlug, role }: { empresaSlug: string
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                className={`group bg-white p-4 rounded-xl shadow-sm border cursor-pointer hover:shadow-md hover:border-primary transition-all ${snapshot.isDragging ? 'shadow-lg ring-2 ring-primary/20' : 'border-slate-200'}`}
+                                role="button"
+                                tabIndex={0}
+                                className={`group bg-white p-4 rounded-xl shadow-sm border cursor-pointer hover:shadow-md hover:border-primary transition-all focus-ring ${snapshot.isDragging ? 'shadow-lg ring-2 ring-primary/20' : 'border-slate-200'}`}
                                 onClick={() => setSelectedOrder(order)}
+                                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedOrder(order); } }}
                               >
                                 <div className="flex justify-between items-start mb-2">
                                   <span className="text-xs font-mono text-slate-400">#{order.id.split('-')[0].toUpperCase()}</span>
@@ -182,7 +222,8 @@ export default function KanbanBoard({ empresaSlug, role }: { empresaSlug: string
                                     href={`https://wa.me/${order.customer_phone.replace(/\D/g, '')}?text=Hola%20${order.customer_name},%20te%20escribimos%20por%20tu%20pedido%20(Orden%20%23${order.id.split('-')[0].toUpperCase()})`} 
                                     target="_blank" 
                                     rel="noreferrer"
-                                    className="text-xs bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1.5 rounded-md font-medium transition-colors"
+                                    className="text-xs bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1.5 rounded-md font-medium transition-colors focus-ring"
+                                    aria-label={`Contactar por WhatsApp a ${order.customer_name}`}
                                   >
                                     Contactar WhatsApp
                                   </a>

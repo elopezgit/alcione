@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { Clock, MapPin, Phone, User, MessageSquare, Utensils, CheckCircle, X, Printer, Edit, Trash2, Save, Plus, Minus } from 'lucide-react';
+import { useToast } from '../../hooks/useToast';
+import { Clock, MapPin, Phone, User, MessageSquare, Utensils, CheckCircle, X, Printer, Edit, Trash2, Save, Plus, Minus, Eye } from 'lucide-react';
 
 interface OrderDetailModalProps {
   order: any;
@@ -13,7 +14,10 @@ interface OrderDetailModalProps {
 export default function OrderDetailModal({ order, onClose, onStatusChange, onDelete, onUpdate }: OrderDetailModalProps) {
   if (!order) return null;
 
+  const toast = useToast();
+
   const [isEditing, setIsEditing] = useState(false);
+  const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
   const [editedData, setEditedData] = useState({
     customer_name: order.customer_name,
     customer_phone: order.customer_phone,
@@ -79,69 +83,93 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onDel
       onClose();
     } catch (error) {
       console.error('Error updating order status:', error);
-      alert('Error al actualizar el estado.');
+      toast.error('Error', 'No se pudo actualizar el estado del pedido.');
     }
   };
 
   const handlePrint = () => {
+    setIsPrintPreviewOpen(true);
+  };
+
+  // HTML-escape para prevenir XSS en la ventana de impresión
+  const escapeHtml = (text: string): string => {
+    const map: Record<string, string> = {
+      '&': '&amp;', '<': '&lt;', '>': '&gt;',
+      '"': '&quot;', "'": '&#039;',
+    };
+    return text.replace(/[&<>"']/g, c => map[c] || c);
+  };
+
+  const generatePrintHtml = (items: any[], comment: string, isPOSOrder: boolean) => {
+    const itemsHtml = items.map((item: any) => `
+      <div style="margin-bottom: 8px;">
+        <div style="font-size: 16px; font-weight: bold;">${escapeHtml(String(item.quantity))}x ${escapeHtml(String(item.name))}</div>
+        ${item.notes ? `<div style="margin-left: 15px; font-size: 14px; font-weight: bold;">* ${escapeHtml(String(item.notes))}</div>` : ''}
+      </div>
+    `).join('');
+
+    const generalNoteHtml = comment ? `
+      <div style="border-top: 1px dashed black; margin: 10px 0;"></div>
+      <div style="font-weight: bold;">NOTAS GENERALES:</div>
+      <div style="font-weight: bold; font-size: 14px;">${escapeHtml(comment)}</div>
+    ` : '';
+
+    const customerName = escapeHtml(order.customer_name || '');
+    const deliveryAddress = order.delivery_address ? escapeHtml(order.delivery_address) : null;
+
+    return `
+      <html>
+        <head>
+          <title>Comanda #${escapeHtml(order.id.slice(0,4).toUpperCase())}</title>
+          <style>
+            body { 
+              font-family: monospace; 
+              padding: 10px; 
+              margin: 0; 
+              width: 80mm; 
+              color: black; 
+            }
+            @media print {
+              body { width: 80mm; }
+            }
+          </style>
+        </head>
+        <body>
+          <h2 style="text-align: center; margin: 0 0 10px 0; font-size: 24px;">COMANDA</h2>
+          <div style="font-size: 18px; font-weight: bold; text-align: center; border: 2px solid black; padding: 5px; margin-bottom: 10px;">
+            #${escapeHtml(order.id.slice(0, 4).toUpperCase())}
+          </div>
+          <div style="font-size: 14px; margin-bottom: 5px;"><strong>Fecha:</strong> ${escapeHtml(new Date(order.created_at).toLocaleString('es-AR'))}</div>
+          <div style="font-size: 14px; margin-bottom: 5px;"><strong>Cliente:</strong> ${customerName}</div>
+          <div style="font-size: 14px; margin-bottom: 10px;"><strong>Tipo:</strong> ${isPOSOrder ? 'Pedido en Local' : (deliveryAddress ? 'Delivery' : 'Retira por local')}</div>
+          
+          <div style="border-top: 1px dashed black; margin: 10px 0;"></div>
+          
+          ${itemsHtml}
+          ${generalNoteHtml}
+          
+          <div style="border-top: 1px dashed black; margin: 15px 0;"></div>
+          <div style="text-align: center; font-size: 12px; margin-top: 20px;">
+            - FIN DE COMANDA -
+          </div>
+          <script>
+            window.onload = function() {
+              window.print();
+              setTimeout(function() { window.close(); }, 500);
+            }
+          <\/script>
+        </body>
+      </html>
+    `;
+  };
+
+  const doPrint = () => {
     const printWindow = window.open('', '', 'width=300,height=600');
     if (printWindow) {
-      const itemsHtml = order.items.map((item: any) => `
-        <div style="margin-bottom: 8px;">
-          <div style="font-size: 16px; font-weight: bold;">${item.quantity}x ${item.name}</div>
-          ${item.notes ? `<div style="margin-left: 15px; font-size: 14px; font-weight: bold;">* ${item.notes}</div>` : ''}
-        </div>
-      `).join('');
-
-      const generalNoteHtml = order.comment ? `
-        <div style="border-top: 1px dashed black; margin: 10px 0;"></div>
-        <div style="font-weight: bold;">NOTAS GENERALES:</div>
-        <div style="font-weight: bold; font-size: 14px;">${order.comment}</div>
-      ` : '';
-
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>Comanda #${order.id.slice(0,4).toUpperCase()}</title>
-            <style>
-              body { 
-                font-family: monospace; 
-                padding: 10px; 
-                margin: 0; 
-                width: 80mm; 
-                color: black; 
-              }
-            </style>
-          </head>
-          <body>
-            <h2 style="text-align: center; margin: 0 0 10px 0; font-size: 24px;">COMANDA</h2>
-            <div style="font-size: 18px; font-weight: bold; text-align: center; border: 2px solid black; padding: 5px; margin-bottom: 10px;">
-              #${order.id.slice(0, 4).toUpperCase()}
-            </div>
-            <div style="font-size: 14px; margin-bottom: 5px;"><strong>Fecha:</strong> ${new Date(order.created_at).toLocaleString('es-AR')}</div>
-            <div style="font-size: 14px; margin-bottom: 5px;"><strong>Cliente:</strong> ${order.customer_name}</div>
-            <div style="font-size: 14px; margin-bottom: 10px;"><strong>Tipo:</strong> ${isPOS ? 'Pedido en Local' : (order.delivery_address ? 'Delivery' : 'Retira por local')}</div>
-            
-            <div style="border-top: 1px dashed black; margin: 10px 0;"></div>
-            
-            ${itemsHtml}
-            ${generalNoteHtml}
-            
-            <div style="border-top: 1px dashed black; margin: 15px 0;"></div>
-            <div style="text-align: center; font-size: 12px; margin-top: 20px;">
-              - FIN DE COMANDA -
-            </div>
-            <script>
-              window.onload = function() {
-                window.print();
-                setTimeout(function() { window.close(); }, 500);
-              }
-            </script>
-          </body>
-        </html>
-      `);
+      printWindow.document.write(generatePrintHtml(order.items, order.comment || '', isPOS));
       printWindow.document.close();
     }
+    setIsPrintPreviewOpen(false);
   };
 
   return (
@@ -163,20 +191,20 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onDel
           </div>
           <div className="flex gap-2">
             {!isEditing && onUpdate && (
-              <button onClick={() => setIsEditing(true)} className="bg-slate-800 p-2 rounded-full hover:bg-slate-700 hover:text-primary transition-colors text-slate-300" title="Editar Pedido">
-                <Edit size={24} />
+              <button onClick={() => setIsEditing(true)} aria-label="Editar pedido" className="bg-slate-800 p-2 rounded-full hover:bg-slate-700 hover:text-primary transition-colors text-slate-300 focus-ring">
+                <Edit size={24} aria-hidden="true" />
               </button>
             )}
             {!isEditing && onDelete && (
-              <button onClick={onDelete} className="bg-slate-800 p-2 rounded-full hover:bg-red-500 hover:text-white transition-colors text-slate-300" title="Eliminar Pedido">
-                <Trash2 size={24} />
+              <button onClick={onDelete} aria-label="Eliminar pedido" className="bg-slate-800 p-2 rounded-full hover:bg-red-500 hover:text-white transition-colors text-slate-300 focus-ring">
+                <Trash2 size={24} aria-hidden="true" />
               </button>
             )}
-            <button onClick={handlePrint} className="bg-slate-800 p-2 rounded-full hover:bg-slate-700 hover:text-primary transition-colors text-slate-300" title="Imprimir Comanda">
-              <Printer size={24} />
+            <button onClick={handlePrint} aria-label="Vista previa de impresión" className="bg-slate-800 p-2 rounded-full hover:bg-slate-700 hover:text-primary transition-colors text-slate-300 focus-ring">
+              <Eye size={24} aria-hidden="true" />
             </button>
-            <button onClick={onClose} className="bg-slate-800 p-2 rounded-full hover:bg-red-500 hover:text-white transition-colors text-slate-300" title="Cerrar">
-              <X size={24} />
+            <button onClick={onClose} aria-label="Cerrar" className="bg-slate-800 p-2 rounded-full hover:bg-red-500 hover:text-white transition-colors text-slate-300 focus-ring">
+              <X size={24} aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -340,6 +368,87 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onDel
           )}
         </div>
       </div>
+      {/* ═══ PRINT PREVIEW MODAL ═══ */}
+      {isPrintPreviewOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[300]">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="bg-stone-900 p-4 text-white flex justify-between items-center">
+              <h2 className="text-lg font-bold flex items-center gap-2">
+                <Printer size={20} /> Vista Previa de Comanda
+              </h2>
+              <button
+                onClick={() => setIsPrintPreviewOpen(false)}
+                aria-label="Cerrar vista previa"
+                className="p-1 hover:bg-white/20 rounded-lg transition-colors focus-ring"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            {/* Print Preview Content */}
+            <div className="p-6 bg-stone-50 overflow-y-auto flex-1">
+              <div className="bg-white border-2 border-dashed border-stone-300 p-4 max-w-[320px] mx-auto shadow-inner" style={{ fontFamily: 'monospace' }}>
+                <h3 className="text-center text-xl font-bold mb-2" style={{ fontFamily: 'monospace' }}>COMANDA</h3>
+                <div className="text-center font-bold text-lg border-2 border-black p-2 mb-3" style={{ fontFamily: 'monospace' }}>
+                  #{order.id.slice(0, 4).toUpperCase()}
+                </div>
+                <p style={{ fontFamily: 'monospace', fontSize: 14, marginBottom: 4 }}>
+                  <strong>Fecha:</strong> {new Date(order.created_at).toLocaleString('es-AR')}
+                </p>
+                <p style={{ fontFamily: 'monospace', fontSize: 14, marginBottom: 4 }}>
+                  <strong>Cliente:</strong> {order.customer_name}
+                </p>
+                <p style={{ fontFamily: 'monospace', fontSize: 14, marginBottom: 10 }}>
+                  <strong>Tipo:</strong> {isPOS ? 'Pedido en Local' : (order.delivery_address ? 'Delivery' : 'Retira por local')}
+                </p>
+                
+                <div className="border-t-2 border-dashed border-stone-300 my-3" />
+                
+                {(isEditing ? editedItems : order.items).map((item: any, i: number) => (
+                  <div key={i} style={{ marginBottom: 8 }}>
+                    <div style={{ fontFamily: 'monospace', fontSize: 16, fontWeight: 'bold' }}>
+                      {item.quantity}x {item.name}
+                    </div>
+                    {item.notes && (
+                      <div style={{ marginLeft: 15, fontFamily: 'monospace', fontSize: 14, fontWeight: 'bold' }}>
+                        * {item.notes}
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                {(isEditing ? editedData.comment : order.comment) && (
+                  <>
+                    <div className="border-t-2 border-dashed border-stone-300 my-3" />
+                    <p style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>NOTAS GENERALES:</p>
+                    <p style={{ fontFamily: 'monospace', fontSize: 14, fontWeight: 'bold' }}>{(isEditing ? editedData.comment : order.comment)}</p>
+                  </>
+                )}
+
+                <div className="border-t-2 border-dashed border-stone-300 my-4" />
+                <p className="text-center" style={{ fontFamily: 'monospace', fontSize: 12 }}>
+                  - FIN DE COMANDA -
+                </p>
+              </div>
+            </div>
+
+            <div className="p-4 bg-white border-t border-stone-200 flex gap-3">
+              <button
+                onClick={() => setIsPrintPreviewOpen(false)}
+                className="flex-1 py-3 rounded-xl font-bold text-stone-600 bg-stone-100 hover:bg-stone-200 transition-colors focus-ring"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={doPrint}
+                className="flex-1 py-3 rounded-xl font-black text-white bg-primary hover:brightness-110 transition-all flex items-center justify-center gap-2 shadow-lg focus-ring"
+              >
+                <Printer size={18} /> Imprimir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

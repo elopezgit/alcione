@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { getEmpresaId } from '../../lib/getEmpresa';
+import { useToast } from '../../hooks/useToast';
 import { filterMrCerdoBanners } from '../../lib/defaultCatalog';
 import { Trash2, Plus, Edit2 } from 'lucide-react';
 
@@ -13,6 +14,7 @@ interface Banner {
 }
 
 export default function BannerManager({ empresaSlug }: { empresaSlug: string }) {
+  const toast = useToast();
   const [empresaId, setEmpresaId] = useState<string | null>(null);
   const [banners, setBanners] = useState<Banner[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,7 +23,7 @@ export default function BannerManager({ empresaSlug }: { empresaSlug: string }) 
 
   useEffect(() => {
     async function init() {
-      const id = await getEmpresaId();
+      const id = await getEmpresaId(empresaSlug);
       if (id) {
         setEmpresaId(id);
         fetchBanners(id);
@@ -36,8 +38,8 @@ export default function BannerManager({ empresaSlug }: { empresaSlug: string }) 
     if (error && error.message.includes('sort_order')) {
       const fallback = await supabase.from('banners').select('*').eq('empresa_id', id).order('created_at');
       setBanners(filterMrCerdoBanners(fallback.data || []));
-    } else {
-      setBanners(filterMrCerdoBanners(data || []));
+    } else if (data) {
+      setBanners(filterMrCerdoBanners(data));
     }
   };
 
@@ -69,11 +71,12 @@ export default function BannerManager({ empresaSlug }: { empresaSlug: string }) 
       setEditingBanner(null);
       setFormData({ image_url: '', link: '', sort_order: 0 });
       fetchBanners(empresaId);
+      toast.success(editingBanner ? 'Banner actualizado' : 'Banner creado');
     } else {
       if (error.message.includes('sort_order')) {
-         alert("Error: Tu base de datos no tiene la columna 'sort_order' en la tabla 'banners'. Por favor créala en Supabase (tipo int4) u omite usarla por ahora.");
+         toast.error('Error de base de datos', "La tabla 'banners' no tiene la columna 'sort_order'. Créala en Supabase (tipo int4) o evita usarla.");
       } else {
-         alert("Error al guardar: " + error.message);
+         toast.error('Error al guardar', error.message);
       }
     }
   };
@@ -91,9 +94,14 @@ export default function BannerManager({ empresaSlug }: { empresaSlug: string }) 
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('¿Eliminar banner?')) return;
+    if (!window.confirm(`¿Eliminar este banner?`)) return;
     const { error } = await supabase.from('banners').delete().eq('id', id);
-    if (!error && empresaId) fetchBanners(empresaId);
+    if (!error && empresaId) {
+      fetchBanners(empresaId);
+      toast.success('Banner eliminado');
+    } else if (error) {
+      toast.error('Error al eliminar', error.message);
+    }
   };
 
   if (!empresaId) return <div className="p-8">Cargando gestor de banners...</div>;

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { getEmpresaId } from '../../lib/getEmpresa';
+import { useToast } from '../../hooks/useToast';
 import { filterMrCerdoCategories, filterMrCerdoProducts } from '../../lib/defaultCatalog';
-import { Trash2, Edit, Plus } from 'lucide-react';
+import { Trash2, Edit, Plus, Upload } from 'lucide-react';
 
 interface Product {
   id: string;
@@ -21,6 +22,7 @@ interface Category {
 }
 
 export default function CatalogManager({ empresaSlug }: { empresaSlug: string }) {
+  const toast = useToast();
   const [empresaId, setEmpresaId] = useState<string | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -35,7 +37,7 @@ export default function CatalogManager({ empresaSlug }: { empresaSlug: string })
 
   useEffect(() => {
     async function init() {
-      const id = await getEmpresaId();
+      const id = await getEmpresaId(empresaSlug);
       if (id) {
         setEmpresaId(id);
         fetchData(id);
@@ -84,8 +86,9 @@ export default function CatalogManager({ empresaSlug }: { empresaSlug: string })
       setIsModalOpen(false);
       setFormData({ id: '', name: '', description: '', price: '', category_id: '', image_url: '', code: '', is_active: true });
       fetchData(empresaId);
+      toast.success(formData.id ? 'Producto actualizado' : 'Producto creado', `"${formData.name}" guardado correctamente.`);
     } else {
-      alert("Error al guardar: " + error.message);
+      toast.error('Error al guardar', error.message);
     }
   };
 
@@ -104,10 +107,14 @@ export default function CatalogManager({ empresaSlug }: { empresaSlug: string })
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('¿Eliminar producto?')) return;
+    const product = products.find(p => p.id === id);
+    if (!window.confirm(`¿Eliminar "${product?.name}"?`)) return;
     const { error } = await supabase.from('products').delete().eq('id', id);
     if (!error && empresaId) {
       fetchData(empresaId);
+      toast.success('Producto eliminado', `"${product?.name}" fue eliminado.`);
+    } else if (error) {
+      toast.error('Error al eliminar', error.message);
     }
   };
 
@@ -261,8 +268,14 @@ export default function CatalogManager({ empresaSlug }: { empresaSlug: string })
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">URL de Imagen</label>
-                <input type="url" placeholder="https://..." value={formData.image_url} onChange={e => setFormData({...formData, image_url: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:border-primary text-sm" />
-                {formData.image_url && <img src={formData.image_url} alt="Preview" className="mt-2 h-20 rounded-lg object-cover border border-slate-200" />}
+                <div className="flex gap-2">
+                  <input type="url" placeholder="https://..." value={formData.image_url} onChange={e => setFormData({...formData, image_url: e.target.value})} className="flex-1 p-2 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:border-primary text-sm" />
+                  <span className="inline-flex items-center px-2 py-1 bg-stone-100 text-stone-500 text-xs rounded-lg border border-stone-200" title="Subir imagen próximamente">
+                    <Upload size={14} className="mr-1" /> URL
+                  </span>
+                </div>
+                <p className="text-xs text-stone-500 mt-1">Usá un servicio como Imgur, Cloudinary o subila a /public/img/</p>
+                {formData.image_url && <img src={formData.image_url} alt="Preview" className="mt-2 h-20 rounded-lg object-cover border border-stone-200" />}
               </div>
               
               <div className="flex items-center gap-2 mt-2 bg-slate-50 p-3 rounded-lg border border-slate-100">
