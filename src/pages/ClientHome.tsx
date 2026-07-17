@@ -56,6 +56,8 @@ interface Banner {
 
 /* ─── Constants ─── */
 const CATEGORY_COLORS: Record<string, { from: string; to: string; shadow: string }> = {
+  'Ahumados & Parrilla': { from: '#8E201B', to: '#A82B24', shadow: 'rgba(161,44,37,0.25)' },
+  'Curados en Sal': { from: '#9A3412', to: '#C2410C', shadow: 'rgba(194,65,12,0.25)' },
   'Chorizos': { from: '#8E201B', to: '#A82B24', shadow: 'rgba(161,44,37,0.25)' },
   'Salames': { from: '#9A3412', to: '#C2410C', shadow: 'rgba(194,65,12,0.25)' },
   'Bondiolas': { from: '#7C2D12', to: '#9A3412', shadow: 'rgba(180,83,9,0.25)' },
@@ -63,11 +65,13 @@ const CATEGORY_COLORS: Record<string, { from: string; to: string; shadow: string
 };
 
 const CATEGORY_KEYWORDS_MAP: Record<string, string[]> = {
+  'Ahumados & Parrilla': ['Choris', 'Matambre', 'Medallones', 'Vacío', 'Costillas', 'Ahumado'],
+  'Curados en Sal': ['Bondiola', 'Jamón', 'Salame de Campo', 'Longaniza', 'Curado en Sal'],
   'Chorizos': ['Criollo', 'Queso', 'Picante', 'Ahumado', 'Roquefort', 'Miel'],
   'Salames': ['Colonia', 'Picado Grueso', 'Ahumado', 'Pimienta'],
   'Bondiolas': ['Curada', 'Ahumada', 'Hierbas'],
   'Matambres': ['Arrollado', 'Tomillo', 'Hierbas', 'Picante'],
-  'todas': ['Criollo', 'Queso', 'Ahumado', 'Picante', 'Miel', 'Salame', 'Bondiola'],
+  'todas': ['Choris', 'Matambre', 'Medallones', 'Vacío', 'Costillas', 'Bondiola', 'Jamón', 'Longaniza', 'Criollo', 'Queso', 'Ahumado', 'Picante', 'Miel'],
 };
 
 const FALLBACK_BANNERS: Banner[] = [

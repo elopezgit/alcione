@@ -32,6 +32,18 @@ export interface DefaultProduct {
 
 export const DEFAULT_CATEGORY_CHORIZOS: DefaultCategory[] = [
   {
+    id: 'cat-ahumados-parrilla-mrcerdo',
+    name: 'Ahumados & Parrilla',
+    icon: '🥩',
+    description: 'Cortes y embutidos ahumados lentamente con leña noble, ideales para parrilla y cocciones lentas.'
+  },
+  {
+    id: 'cat-curados-sal-mrcerdo',
+    name: 'Curados en Sal',
+    icon: '🥓',
+    description: 'Charcutería fina de maduración prolongada y curación artesanal en sal marina y especias.'
+  },
+  {
     id: 'cat-chorizos-mrcerdo',
     name: 'Chorizos',
     icon: '🐷',
@@ -40,26 +52,236 @@ export const DEFAULT_CATEGORY_CHORIZOS: DefaultCategory[] = [
   {
     id: 'cat-salames-mrcerdo',
     name: 'Salames',
-    icon: '🥓',
+    icon: '🥖',
     description: 'Salames y longanizas de maduración lenta en cámaras con control de humedad.'
   },
   {
     id: 'cat-bondiolas-mrcerdo',
     name: 'Bondiolas',
-    icon: '🥩',
+    icon: '🍖',
     description: 'Bondiolas curadas artesanalmente con finas hierbas y especias seleccionadas.'
   },
   {
     id: 'cat-matambres-mrcerdo',
     name: 'Matambres',
-    icon: '🍖',
+    icon: '🥓',
     description: 'Matambres de cerdo arrollados tiernos, listos para hornear o dorar a la parrilla.'
   }
 ];
 
 export const DEFAULT_CHORIZO_PRODUCTS: DefaultProduct[] = [
   // ==========================================
-  // CHORIZOS ARTESANALES (8 VARIEDADES)
+  // LÍNEA OFICIAL MR. CERDO: AHUMADOS & PARRILLA (POR KG)
+  // ==========================================
+  {
+    id: 'prod-pa-001',
+    category_id: 'cat-ahumados-parrilla-mrcerdo',
+    name: 'Chorizos Artesanales (Choris)',
+    description: 'Elaborados artesanalmente 100% con pura carne seleccionada de cerdo y condimentos naturales. Jugosidad y sabor incomparables para tu parrilla.',
+    price: 22000,
+    image_url: '/img/Catalogo/chorizos/criollo.png',
+    code: 'PA-001',
+    sort_order: 1,
+    is_active: true,
+    badge: 'POR KG • MÁS VENDIDO',
+    profile: ['Parrilla', 'Jugoso', 'Puro Cerdo'],
+    spiciness: 'Sin picante',
+    intensity: 'Media',
+    smokiness: 'Sin ahumar',
+    pairing: 'Malbec Reserva o Cabernet Sauvignon',
+    idealFor: 'Parrilla al carbón, leña o sartén de hierro',
+    cookingTime: '25-30 minutos a fuego medio',
+    conservation: 'Envasado al vacío. Mantener refrigerado (0-4°C) o en freezer.',
+    ingredients: ['Carne seleccionada puro cerdo', 'Especias naturales criollas', 'Pimienta negra recién molida', 'Sal marina'],
+    weight: 'Precio por Kilogramo (kg)'
+  },
+  {
+    id: 'prod-pa-002',
+    category_id: 'cat-ahumados-parrilla-mrcerdo',
+    name: 'Matambre Ahumado de Cerdo',
+    description: 'Matambre tierno de cerdo sometido a un ahumado lento con leña de frutales. Exquisito aroma ahumado, textura suave y una costra dorada irresistible al asarlo.',
+    price: 24000,
+    image_url: '/img/Catalogo/matambres/tradicional.png',
+    code: 'PA-002',
+    sort_order: 2,
+    is_active: true,
+    badge: 'POR KG • AHUMADO',
+    profile: ['Ahumado', 'Tierno', 'Gourmet'],
+    spiciness: 'Sin picante',
+    intensity: 'Intensa',
+    smokiness: 'Ahumado Natural',
+    pairing: 'Syrah o Pinot Noir patagónico',
+    idealFor: 'Parrilla del lado del cuero o cocción lenta al horno',
+    cookingTime: '20-25 minutos a fuego medio a la parrilla',
+    conservation: 'Envasado al vacío. Refrigerar o congelar.',
+    ingredients: ['Matambre seleccionado de cerdo magro', 'Sal marina', 'Especias aromáticas', 'Ahumado natural con leña noble'],
+    weight: 'Precio por Kilogramo (kg)'
+  },
+  {
+    id: 'prod-pa-003',
+    category_id: 'cat-ahumados-parrilla-mrcerdo',
+    name: 'Bondiola Ahumada en Medallones',
+    description: 'Medallones gruesos y jugosos de bondiola de cerdo ahumados en frío y caliente. Ideales para sellar a la plancha o dorar en la parrilla en pocos minutos.',
+    price: 19000,
+    image_url: '/img/Catalogo/bondiolas/tradicional.png',
+    code: 'PA-003',
+    sort_order: 3,
+    is_active: true,
+    badge: 'POR KG • MEDALLONES',
+    profile: ['Medallones', 'Jugoso', 'Ahumado'],
+    spiciness: 'Sin picante',
+    intensity: 'Intensa',
+    smokiness: 'Ahumado Intenso',
+    pairing: 'Chardonnay con paso por madera o Cerveza IPA',
+    idealFor: 'Plancha bien caliente o parrilla vuelta y vuelta',
+    cookingTime: '12-15 minutos a fuego fuerte',
+    conservation: 'Envasado al vacío en porciones. Refrigerar.',
+    ingredients: ['Corte central de bondiola de cerdo', 'Sal marina', 'Pimienta negra en grano', 'Ahumado natural'],
+    weight: 'Precio por Kilogramo (kg)'
+  },
+  {
+    id: 'prod-pa-004',
+    category_id: 'cat-ahumados-parrilla-mrcerdo',
+    name: 'Vacío Ahumado de Cerdo',
+    description: 'Corte noble con un delicado ahumado artesanal. Sabor penetrante, jugosidad extrema y fibras que se cortan con cuchara tras un buen asado.',
+    price: 18000,
+    image_url: '/img/Catalogo/catalogobase.png',
+    code: 'PA-004',
+    sort_order: 4,
+    is_active: true,
+    badge: 'POR KG • TIERNO',
+    profile: ['Vacío', 'Ahumado natural', 'Fibras tiernas'],
+    spiciness: 'Sin picante',
+    intensity: 'Intensa',
+    smokiness: 'Ahumado Natural',
+    pairing: 'Malbec de altura o Bonarda tucumano',
+    idealFor: 'Asado tradicional al carbón o leña',
+    cookingTime: '35-40 minutos a fuego moderado',
+    conservation: 'Envasado al vacío refrigerado.',
+    ingredients: ['Vacío fresco de puro cerdo', 'Sal marina patagónica', 'Hierbas serranas', 'Ahumado artesanal'],
+    weight: 'Precio por Kilogramo (kg)'
+  },
+  {
+    id: 'prod-pa-005',
+    category_id: 'cat-ahumados-parrilla-mrcerdo',
+    name: 'Costillas de Cerdo Seleccionadas',
+    description: 'Costillar de cerdo con gran cobertura de carne y marmoleo perfecto. Asadas lentamente logran un desprendimiento impecable del hueso.',
+    price: 16000,
+    image_url: '/img/Catalogo/catalogobase.png',
+    code: 'PA-005',
+    sort_order: 5,
+    is_active: true,
+    badge: 'POR KG • PARRILLA',
+    profile: ['Costillar', 'Jugoso', 'Especial Asado'],
+    spiciness: 'Sin picante',
+    intensity: 'Media',
+    smokiness: 'Sin ahumar',
+    pairing: 'Cabernet Franc o Cerveza Amber Ale',
+    idealFor: 'Asador criollo, parrilla a fuego lento u horno con barbacoa',
+    cookingTime: '45-60 minutos a fuego lento del lado del hueso',
+    conservation: 'Envasado al vacío. Mantener refrigerado entre 0°C y 4°C.',
+    ingredients: ['Costillar seleccionado de puro cerdo', 'Sal marina'],
+    weight: 'Precio por Kilogramo (kg)'
+  },
+
+  // ==========================================
+  // LÍNEA OFICIAL MR. CERDO: CURADOS EN SAL (POR KG)
+  // ==========================================
+  {
+    id: 'prod-cu-001',
+    category_id: 'cat-curados-sal-mrcerdo',
+    name: 'Bondiola Curada en Sal Marina',
+    description: 'Curada en sal marina y madurada lentamente en cava artesanal con temperatura y humedad controladas. Vetas marmoladas que se deshacen en el paladar.',
+    price: 28000,
+    image_url: '/img/Catalogo/bondiolas/tradicional.png',
+    code: 'CU-001',
+    sort_order: 10,
+    is_active: true,
+    badge: 'POR KG • CURADA EN SAL',
+    profile: ['Curada en sal', 'Sedosa', 'Maduración lenta'],
+    spiciness: 'Sin picante',
+    intensity: 'Intensa',
+    smokiness: 'Sin ahumar',
+    pairing: 'Pinot Noir joven o Malbec elegante',
+    idealFor: 'Cortar en fetas extra finas para tablas de charcutería o carpaccio',
+    curingProcess: 'Salazón seca en sal marina y curado prolongado en cava',
+    maturationTime: '60 a 75 días de maduración controlada',
+    conservation: 'Envasado al vacío. Refrigerar (4-8°C). Una vez abierto, envolver en film protector.',
+    ingredients: ['Corte entero magro de bondiola de cerdo', 'Sal marina', 'Nuez moscada', 'Pimienta negra en grano'],
+    weight: 'Precio por Kilogramo (kg)'
+  },
+  {
+    id: 'prod-cu-002',
+    category_id: 'cat-curados-sal-mrcerdo',
+    name: 'Jamón Ahumado Curado en Sal',
+    description: 'Pieza noble de pernil de cerdo curada artesanalmente en sal y ahumada en frío con maderas nobles. Aroma refinado, color rubí y sabor profundo.',
+    price: 29000,
+    image_url: '/img/Catalogo/catalogobase.png',
+    code: 'CU-002',
+    sort_order: 11,
+    is_active: true,
+    badge: 'POR KG • PREMIUM',
+    profile: ['Jamón ahumado', 'Curado gourmet', 'Rubí intenso'],
+    spiciness: 'Sin picante',
+    intensity: 'Muy Gourmet',
+    smokiness: 'Ahumado Natural',
+    pairing: 'Merlot equilibrado o Espumante Extra Brut',
+    idealFor: 'Tablas de picadas gourmet, tostadas de masa madre con aceite de oliva',
+    curingProcess: 'Salazón tradicional, estacionamiento y ahumado lento con leña de manzano',
+    maturationTime: '90 días de curación y afinado',
+    conservation: 'Refrigerado envuelto en papel craft o envasado al vacío.',
+    ingredients: ['Pernil magro seleccionado de puro cerdo', 'Sal marina', 'Especias aromáticas', 'Ahumado natural en frío'],
+    weight: 'Precio por Kilogramo (kg)'
+  },
+  {
+    id: 'prod-cu-003',
+    category_id: 'cat-curados-sal-mrcerdo',
+    name: 'Salame de Campo Artesanal',
+    description: 'Salame criollo elaborado según la receta casera tradicional, con curado en sal natural y estacionamiento con flora blanca autóctona. Sabor rústico y genuino.',
+    price: 28000,
+    image_url: '/img/Catalogo/salames/tradicional.png',
+    code: 'CU-003',
+    sort_order: 12,
+    is_active: true,
+    badge: 'POR KG • DE CAMPO',
+    profile: ['De campo', 'Estacionado', 'Tradicional'],
+    spiciness: 'Sin picante',
+    intensity: 'Intensa',
+    smokiness: 'Sin ahumar',
+    pairing: 'Malbec joven o Vermouth rosso con rodaja de naranja',
+    idealFor: 'Picada criolla infaltable y sándwiches rústicos de campo',
+    curingProcess: 'Curación en sal y secado lento natural en bodega',
+    maturationTime: '40 a 45 días de maduración',
+    conservation: 'Lugar fresco y seco (12-15°C) o refrigerado en heladera.',
+    ingredients: ['Carne seleccionada de cerdo y novillo magro', 'Tocino firme de dorso', 'Sal marina', 'Pimienta en grano', 'Vino moscato'],
+    weight: 'Precio por Kilogramo (kg)'
+  },
+  {
+    id: 'prod-cu-004',
+    category_id: 'cat-curados-sal-mrcerdo',
+    name: 'Longaniza Española Curada',
+    description: 'Auténtica longaniza estilo español curada en sal marina e infusionada con pimentón de la Vera dulce y ahumado. Sabor y color inconfundibles.',
+    price: 28000,
+    image_url: '/img/Catalogo/salames/tradicional.png',
+    code: 'CU-004',
+    sort_order: 13,
+    is_active: true,
+    badge: 'POR KG • ESPAÑOLA',
+    profile: ['Pimentón de la Vera', 'Curada en sal', 'Tradición ibérica'],
+    spiciness: 'Bajo',
+    intensity: 'Intensa',
+    smokiness: 'Leve',
+    pairing: 'Tempranillo o Cerveza Indian Pale Ale (IPA)',
+    idealFor: 'Aperitivos calientes, tapeo gourmet o consumo en rodajas finas',
+    curingProcess: 'Maceración con pimentón ibérico, salazón y curado en cámara',
+    maturationTime: '35 a 45 días de estacionamiento',
+    conservation: 'Conservar en lugar fresco y seco o refrigerado.',
+    ingredients: ['Carne magra de cerdo', 'Pimentón ahumado español', 'Sal marina', 'Ajo macerado al vino blanco'],
+    weight: 'Precio por Kilogramo (kg)'
+  },
+
+  // ==========================================
+  // CHORIZOS ARTESANALES GOURMET (VARIEDADES ESPECIALES)
   // ==========================================
   {
     id: 'prod-ch-001',
@@ -69,9 +291,9 @@ export const DEFAULT_CHORIZO_PRODUCTS: DefaultProduct[] = [
     price: 3500,
     image_url: '/img/Catalogo/chorizos/criollo.png',
     code: 'CH-001',
-    sort_order: 1,
+    sort_order: 20,
     is_active: true,
-    badge: 'MÁS VENDIDO',
+    badge: 'TRADICIONAL',
     profile: ['Tradicional', 'Criollo', 'Jugoso'],
     spiciness: 'Bajo',
     intensity: 'Media',
@@ -91,7 +313,7 @@ export const DEFAULT_CHORIZO_PRODUCTS: DefaultProduct[] = [
     price: 3800,
     image_url: '/img/Catalogo/chorizos/tomillo.png',
     code: 'CH-002',
-    sort_order: 2,
+    sort_order: 21,
     is_active: true,
     badge: 'GOURMET',
     profile: ['Dulce', 'Aromático', 'Herbal'],
@@ -113,7 +335,7 @@ export const DEFAULT_CHORIZO_PRODUCTS: DefaultProduct[] = [
     price: 3800,
     image_url: '/img/Catalogo/chorizos/criollo.png',
     code: 'CH-003',
-    sort_order: 3,
+    sort_order: 22,
     is_active: true,
     badge: 'PREMIUM',
     profile: ['Mediterráneo', 'Muy jugoso', 'Levemente ahumado'],
@@ -135,7 +357,7 @@ export const DEFAULT_CHORIZO_PRODUCTS: DefaultProduct[] = [
     price: 4200,
     image_url: '/img/Catalogo/chorizos/tomillo.png',
     code: 'CH-004',
-    sort_order: 4,
+    sort_order: 23,
     is_active: true,
     badge: 'EXCLUSIVO',
     profile: ['Queso azul', 'Contraste dulce', 'Sofisticado'],
@@ -157,7 +379,7 @@ export const DEFAULT_CHORIZO_PRODUCTS: DefaultProduct[] = [
     price: 4200,
     image_url: '/img/Catalogo/chorizos/criollo.png',
     code: 'CH-005',
-    sort_order: 5,
+    sort_order: 24,
     is_active: true,
     badge: 'EDICIÓN CHEF',
     profile: ['Dulce agrio', 'Queso estacionado', 'Muy gourmet'],
@@ -179,7 +401,7 @@ export const DEFAULT_CHORIZO_PRODUCTS: DefaultProduct[] = [
     price: 3900,
     image_url: '/img/Catalogo/chorizos/tomillo.png',
     code: 'CH-006',
-    sort_order: 6,
+    sort_order: 25,
     is_active: true,
     badge: 'FUNDENTE',
     profile: ['Pimentón ibérico', 'Cremoso', 'Fundente'],
@@ -193,53 +415,9 @@ export const DEFAULT_CHORIZO_PRODUCTS: DefaultProduct[] = [
     ingredients: ['Carne de cerdo', 'Queso Cheddar madurado', 'Pimentón ahumado español', 'Ajo macerado en vino blanco'],
     weight: 'Pack x 4 unidades (~550g)'
   },
-  {
-    id: 'prod-ch-007',
-    category_id: 'cat-chorizos-mrcerdo',
-    name: 'Chorizo Jalapeño y Queso Fontina',
-    description: 'Para los amantes de las notas especiadas intensas: suave picor de chiles jalapeños equilibrado por la untuosidad del queso Fontina.',
-    price: 4000,
-    image_url: '/img/Catalogo/chorizos/criollo.png',
-    code: 'CH-007',
-    sort_order: 7,
-    is_active: true,
-    badge: 'PICANTE',
-    profile: ['Especiado', 'Queso fundido', 'Vibrante'],
-    spiciness: 'Medio',
-    intensity: 'Intensa',
-    smokiness: 'Leve',
-    pairing: 'Cerveza Indian Pale Ale (IPA) bien fría',
-    idealFor: 'Parrilla entre amigos y picadas intensas',
-    cookingTime: '25 minutos a fuego medio',
-    conservation: 'Envasado al vacío. Hasta 30 días refrigerado.',
-    ingredients: ['Carne de cerdo seleccionada', 'Chiles jalapeños verdes', 'Queso Fontina de campo', 'Especias'],
-    weight: 'Pack x 4 unidades (~550g)'
-  },
-  {
-    id: 'prod-ch-008',
-    category_id: 'cat-chorizos-mrcerdo',
-    name: 'Chorizo Ahumado con Romero y Vino Blanco',
-    description: 'Chorizo aromático madurado con romero fresco serrano y reducción de vino blanco Torrontés norteño. Delicadeza en cada bocado.',
-    price: 4100,
-    image_url: '/img/Catalogo/chorizos/tomillo.png',
-    code: 'CH-008',
-    sort_order: 8,
-    is_active: true,
-    badge: 'ESPECIAL',
-    profile: ['Herbal', 'Ahumado sutil', 'Vino blanco'],
-    spiciness: 'Sin picante',
-    intensity: 'Media',
-    smokiness: 'Ahumado Natural',
-    pairing: 'Torrontés de altura de Cafayate o Sauvignon Blanc',
-    idealFor: 'Cocina de autor en sartén u horno',
-    cookingTime: '20 minutos a fuego lento',
-    conservation: 'Envasado al vacío. Hasta 30 días refrigerado.',
-    ingredients: ['Puro cerdo magro', 'Romero fresco', 'Vino blanco Torrontés', 'Sal marina patagónica'],
-    weight: 'Pack x 4 unidades (~550g)'
-  },
 
   // ==========================================
-  // SALAMES ARTESANALES (5 VARIEDADES)
+  // SALAMES ARTESANALES GOURMET
   // ==========================================
   {
     id: 'prod-sa-001',
@@ -249,7 +427,7 @@ export const DEFAULT_CHORIZO_PRODUCTS: DefaultProduct[] = [
     price: 4800,
     image_url: '/img/Catalogo/salames/tradicional.png',
     code: 'SA-001',
-    sort_order: 10,
+    sort_order: 30,
     is_active: true,
     badge: 'CURADO NATURAL',
     profile: ['Tradicional', 'Equilibrado', 'Madurado'],
@@ -272,7 +450,7 @@ export const DEFAULT_CHORIZO_PRODUCTS: DefaultProduct[] = [
     price: 4900,
     image_url: '/img/Catalogo/salames/tradicional.png',
     code: 'SA-002',
-    sort_order: 11,
+    sort_order: 31,
     is_active: true,
     badge: 'PICADO GRUESO',
     profile: ['Firme', 'Especiado', 'Rústico'],
@@ -287,88 +465,19 @@ export const DEFAULT_CHORIZO_PRODUCTS: DefaultProduct[] = [
     ingredients: ['Carne de cerdo 80%', 'Tocino firme en cubos 20%', 'Especias criollas', 'Ajo'],
     weight: 'Pieza entera (~350g)'
   },
-  {
-    id: 'prod-sa-003',
-    category_id: 'cat-salames-mrcerdo',
-    name: 'Salame Premium Selección',
-    description: 'Elaborado exclusivamente con solomillo y pernil de cerdo magro seleccionado. Mínimo contenido graso y máximo refinamiento de sabor.',
-    price: 5600,
-    image_url: '/img/Catalogo/salames/tradicional.png',
-    code: 'SA-003',
-    sort_order: 12,
-    is_active: true,
-    badge: 'ALTA CHARCUTERÍA',
-    profile: ['Magro', 'Delicado', 'Aromático'],
-    spiciness: 'Sin picante',
-    intensity: 'Muy Gourmet',
-    smokiness: 'Sin ahumar',
-    pairing: 'Pinot Noir patagónico o Espumante Extra Brut',
-    idealFor: 'Tablas de degustación premium con frutos secos',
-    curingProcess: 'Maduración prolongada a temperatura de bodega',
-    maturationTime: '60 días de estacionamiento',
-    conservation: 'Conservar en heladera entre 4°C y 8°C.',
-    ingredients: ['Solomillo y pernil magro de cerdo', 'Pimienta blanca de Sarawak', 'Sal marina del sur'],
-    weight: 'Pieza entera (~300g)'
-  },
-  {
-    id: 'prod-sa-004',
-    category_id: 'cat-salames-mrcerdo',
-    name: 'Salame Ahumado con Leña de Frutales',
-    description: 'Ahuma suavemente en caliente con leña de manzano y nogal, aportando notas tostadas increíbles sin tapar el sabor artesanal.',
-    price: 5200,
-    image_url: '/img/Catalogo/salames/tradicional.png',
-    code: 'SA-004',
-    sort_order: 13,
-    is_active: true,
-    badge: 'AHUMADO',
-    profile: ['Madera noble', 'Ahumado sutil', 'Intenso'],
-    spiciness: 'Sin picante',
-    intensity: 'Intensa',
-    smokiness: 'Ahumado Intenso',
-    pairing: 'Syrah o Cerveza Porter / Stout',
-    idealFor: 'Acompañar quesos ahumados y encurtidos artesanales',
-    curingProcess: 'Ahumado artesanal en horno de leña y posterior secado',
-    maturationTime: '45 días',
-    conservation: 'Envasado al vacío o refrigerado.',
-    ingredients: ['Carne de cerdo seleccionada', 'Pimienta negra en grano', 'Ahumado natural con leña de manzano'],
-    weight: 'Pieza entera (~330g)'
-  },
-  {
-    id: 'prod-sa-005',
-    category_id: 'cat-salames-mrcerdo',
-    name: 'Salame a la Pimienta Negra en Costra',
-    description: 'Recubierto en costra artesanal de pimientas recién partidas. Explosión aromática en cada bocado para paladares exigentes.',
-    price: 5100,
-    image_url: '/img/Catalogo/salames/tradicional.png',
-    code: 'SA-005',
-    sort_order: 14,
-    is_active: true,
-    badge: 'COSTRA PIMIENTA',
-    profile: ['Especiado picante', 'Crujiente', 'Intenso'],
-    spiciness: 'Medio',
-    intensity: 'Intensa',
-    smokiness: 'Sin ahumar',
-    pairing: 'Cabernet Sauvignon de gran cuerpo',
-    idealFor: 'Aperitivos de carácter y maridaje con quesos duros',
-    curingProcess: 'Curado en seco y recubrimiento manual en pimientas',
-    maturationTime: '40 días',
-    conservation: 'Refrigerar envuelto en papel para mantener la costra crujiente.',
-    ingredients: ['Carne de cerdo', 'Mix de pimientas negras y verdes partidas', 'Ajo'],
-    weight: 'Pieza entera (~320g)'
-  },
 
   // ==========================================
-  // BONDIOLAS ARTESANALES (4 VARIEDADES)
+  // BONDIOLAS GOURMET (PIEZAS FETEADAS / MEDIAS)
   // ==========================================
   {
     id: 'prod-bo-001',
     category_id: 'cat-bondiolas-mrcerdo',
-    name: 'Bondiola Curada Tradicional',
+    name: 'Bondiola Curada Tradicional (Pieza Media)',
     description: 'Bondiola de cerdo madurada lentamente con sal marina y especias criollas. Textura sedosa y vetas marmoladas que se deshacen en el paladar.',
     price: 7500,
     image_url: '/img/Catalogo/bondiolas/tradicional.png',
     code: 'BO-001',
-    sort_order: 20,
+    sort_order: 40,
     is_active: true,
     badge: 'ARTESANAL',
     profile: ['Sedosa', 'Curación lenta', 'Delicada'],
@@ -381,19 +490,19 @@ export const DEFAULT_CHORIZO_PRODUCTS: DefaultProduct[] = [
     maturationTime: '60 a 75 días de curado controlado',
     conservation: 'Envasado al vacío. Una vez abierta, envolver en film en heladera.',
     ingredients: ['Corte entero de bondiola de cerdo magra', 'Sal marina', 'Nuez moscada', 'Pimienta negra'],
-    weight: 'Pieza media o feteada (~450g)'
+    weight: 'Pieza media (~450g)'
   },
   {
     id: 'prod-bo-002',
     category_id: 'cat-bondiolas-mrcerdo',
-    name: 'Bondiola Ahumada al Nogal',
+    name: 'Bondiola Ahumada al Nogal (Pieza Media)',
     description: 'Ahumada con astillas de madera de nogal del norte argentino. Aroma profundo, color ámbar y jugosidad inconfundible.',
     price: 7900,
     image_url: '/img/Catalogo/bondiolas/tradicional.png',
     code: 'BO-002',
-    sort_order: 21,
+    sort_order: 41,
     is_active: true,
-    badge: 'AHUMADA',
+    badge: 'AHUMADA AL NOGAL',
     profile: ['Madera de nogal', 'Aromática', 'Marmolada'],
     spiciness: 'Sin picante',
     intensity: 'Intensa',
@@ -406,55 +515,9 @@ export const DEFAULT_CHORIZO_PRODUCTS: DefaultProduct[] = [
     ingredients: ['Bondiola de cerdo seleccionada', 'Ahumado con nogal', 'Especias aromáticas'],
     weight: 'Pieza media (~450g)'
   },
-  {
-    id: 'prod-bo-003',
-    category_id: 'cat-bondiolas-mrcerdo',
-    name: 'Bondiola a la Pimienta Negra y Coriandro',
-    description: 'Envuelta en una fina costra de pimienta negra partida y semillas tostadas de coriandro cítrico. Un equilibrio gourmet de frescura e intensidad.',
-    price: 7800,
-    image_url: '/img/Catalogo/bondiolas/tradicional.png',
-    code: 'BO-003',
-    sort_order: 22,
-    is_active: true,
-    badge: 'GOURMET',
-    profile: ['Cítrica especiada', 'Refinada', 'Intensa'],
-    spiciness: 'Bajo',
-    intensity: 'Muy Gourmet',
-    smokiness: 'Sin ahumar',
-    pairing: 'Syrah o Riesling seco',
-    idealFor: 'Degustación con quesos de cabra o Brie',
-    curingProcess: 'Maduración artesanal y rebozado en especias frescas',
-    maturationTime: '65 días',
-    conservation: 'Envasado al vacío. Refrigerar.',
-    ingredients: ['Bondiola de cerdo', 'Semillas de coriandro tostado', 'Pimienta negra en grano'],
-    weight: 'Pieza media (~450g)'
-  },
-  {
-    id: 'prod-bo-004',
-    category_id: 'cat-bondiolas-mrcerdo',
-    name: 'Bondiola a las Finas Hierbas del Cerro',
-    description: 'Aromatizada con tomillo serrano, romero fresco y laurel tucumano. Un perfil herbal suave y distinguido.',
-    price: 7800,
-    image_url: '/img/Catalogo/bondiolas/tradicional.png',
-    code: 'BO-004',
-    sort_order: 23,
-    is_active: true,
-    badge: 'HIERBAS SERRANAS',
-    profile: ['Herbal fresco', 'Aromático', 'Suave'],
-    spiciness: 'Sin picante',
-    intensity: 'Suave',
-    smokiness: 'Sin ahumar',
-    pairing: 'Torrontés tucumano o Chardonnay',
-    idealFor: 'Entradas ligeras con aceite de oliva virgen extra',
-    curingProcess: 'Infusión en hierbas y secado lento',
-    maturationTime: '60 días',
-    conservation: 'Refrigerado envasado al vacío.',
-    ingredients: ['Bondiola seleccionada', 'Romero serrano', 'Tomillo fresco', 'Sal marina'],
-    weight: 'Pieza media (~450g)'
-  },
 
   // ==========================================
-  // MATAMBRES ARTESANALES (5 VARIEDADES)
+  // MATAMBRES ARROLLADOS GOURMET
   // ==========================================
   {
     id: 'prod-ma-001',
@@ -464,7 +527,7 @@ export const DEFAULT_CHORIZO_PRODUCTS: DefaultProduct[] = [
     price: 8200,
     image_url: '/img/Catalogo/matambres/tradicional.png',
     code: 'MA-001',
-    sort_order: 30,
+    sort_order: 50,
     is_active: true,
     badge: 'RECETA CASERA',
     profile: ['Casero', 'Tierno', 'Relleno criollo'],
@@ -486,7 +549,7 @@ export const DEFAULT_CHORIZO_PRODUCTS: DefaultProduct[] = [
     price: 8600,
     image_url: '/img/Catalogo/matambres/tradicional.png',
     code: 'MA-002',
-    sort_order: 31,
+    sort_order: 51,
     is_active: true,
     badge: 'LAQUEADO GOURMET',
     profile: ['Glaseado miel', 'Aromático', 'Dulce-salado'],
@@ -499,72 +562,6 @@ export const DEFAULT_CHORIZO_PRODUCTS: DefaultProduct[] = [
     conservation: 'Envasado al vacío. Refrigerar.',
     ingredients: ['Matambre seleccionado de cerdo', 'Mostaza en grano', 'Miel pura', 'Tomillo serrano'],
     weight: 'Pieza entera macerada (~800g)'
-  },
-  {
-    id: 'prod-ma-003',
-    category_id: 'cat-matambres-mrcerdo',
-    name: 'Matambre a las Hierbas Serranas',
-    description: 'Adobado con romero, orégano de sierra, ajo asado y aceite de oliva virgen extra. Fresco, aromático y tierno como manteca.',
-    price: 8400,
-    image_url: '/img/Catalogo/matambres/tradicional.png',
-    code: 'MA-003',
-    sort_order: 32,
-    is_active: true,
-    badge: 'AROMÁTICO',
-    profile: ['Herbal serrano', 'Ajo asado', 'Tierno'],
-    spiciness: 'Sin picante',
-    intensity: 'Media',
-    smokiness: 'Sin ahumar',
-    pairing: 'Cabernet Franc o Sauvignon Blanc',
-    idealFor: 'Parrilla al limón o cocina al horno',
-    cookingTime: '20 minutos a la parrilla del lado del cuero primero',
-    conservation: 'Envasado al vacío refrigerado.',
-    ingredients: ['Matambre de cerdo', 'Aceite de oliva extra virgen', 'Mix de hierbas serranas tucumanas'],
-    weight: 'Pieza entera (~800g)'
-  },
-  {
-    id: 'prod-ma-004',
-    category_id: 'cat-matambres-mrcerdo',
-    name: 'Matambre al Ajo Confitado y Romero',
-    description: 'Infundido con pasta de ajo confitado a baja temperatura durante 6 horas y ramitas de romero. Un sabor profundo, dulce y nada invasivo.',
-    price: 8500,
-    image_url: '/img/Catalogo/matambres/tradicional.png',
-    code: 'MA-004',
-    sort_order: 33,
-    is_active: true,
-    badge: 'CONFITADO',
-    profile: ['Ajo suave confitado', 'Untuoso', 'Gourmet'],
-    spiciness: 'Sin picante',
-    intensity: 'Intensa',
-    smokiness: 'Sin ahumar',
-    pairing: 'Malbec Reserva del Norte',
-    idealFor: 'Horno lento o parrilla sobre brasas suaves',
-    cookingTime: '25 minutos a horno moderado',
-    conservation: 'Envasado al vacío refrigerado.',
-    ingredients: ['Matambre magro de cerdo', 'Ajo confitado en aceite de oliva', 'Romero fresco'],
-    weight: 'Pieza entera (~800g)'
-  },
-  {
-    id: 'prod-ma-005',
-    category_id: 'cat-matambres-mrcerdo',
-    name: 'Matambre Especiado Picante Norteño',
-    description: 'Adobado con ají locoto tucumano, pimentón ahumado y especias calientes. Para los que buscan carácter y un toque picante criollo auténtico.',
-    price: 8500,
-    image_url: '/img/Catalogo/matambres/tradicional.png',
-    code: 'MA-005',
-    sort_order: 34,
-    is_active: true,
-    badge: 'PICANTE CRIOLLO',
-    profile: ['Picante norteño', 'Ahuma pimentón', 'Intenso'],
-    spiciness: 'Alto',
-    intensity: 'Intensa',
-    smokiness: 'Leve',
-    pairing: 'Cerveza IPA o Torrontés bien frío',
-    idealFor: 'Parrilla con rodajas de limón fresco',
-    cookingTime: '20 minutos a la parrilla fuego medio',
-    conservation: 'Envasado al vacío refrigerado.',
-    ingredients: ['Matambre de cerdo', 'Ají locoto en copos', 'Pimentón de los Valles', 'Sal marina'],
-    weight: 'Pieza entera (~800g)'
   }
 ];
 
@@ -576,7 +573,7 @@ export function filterMrCerdoCategories(cats: any[]): any[] {
     if (/proteín|creatin|suplement|pre-entren|vitamin|amino|quemador|ganador|barra|shaker|ropa|accesor/i.test(name)) {
       return false;
     }
-    return ['chorizos', 'salames', 'bondiolas', 'matambres', 'combos', 'parrilla', 'embutidos'].some(allowed => name.includes(allowed));
+    return ['chorizos', 'salames', 'bondiolas', 'matambres', 'combos', 'parrilla', 'embutidos', 'ahumados', 'curados', 'cortes'].some(allowed => name.includes(allowed));
   });
   return filtered.length > 0 ? filtered : DEFAULT_CATEGORY_CHORIZOS;
 }
@@ -594,7 +591,13 @@ export function filterMrCerdoProducts(prods: any[]): any[] {
            code.startsWith('SA-') ||
            code.startsWith('BO-') ||
            code.startsWith('MA-') ||
-           /chorizo|salame|bondiola|matambre|embutido|cerdo|criollo|morrón|tomillo|roquefort|higo|cheddar/i.test(text);
+           code.startsWith('PA-') ||
+           code.startsWith('CU-') ||
+           code.startsWith('VA-') ||
+           code.startsWith('CO-') ||
+           code.startsWith('JA-') ||
+           code.startsWith('LO-') ||
+           /chorizo|salame|bondiola|matambre|embutido|cerdo|criollo|morrón|tomillo|roquefort|higo|cheddar|ahumado|curado|vacio|vacío|costillas|jamón|jamon|longaniza|medallones/i.test(text);
   });
   return filtered.length > 0 ? filtered : DEFAULT_CHORIZO_PRODUCTS;
 }
