@@ -127,16 +127,16 @@ const ALCIONE_KEYWORDS_MAP: Record<string, string[]> = {
 };
 
 const ALCIONE_BANNERS: Banner[] = [
-  { id: 'al-b1', image_url: '/img/Catalogo/alcione/banner1.jpg', title: 'DECO AL MEJOR PRECIO', subtitle: 'Transformá tu hogar con estilo' },
-  { id: 'al-b2', image_url: '/img/Catalogo/alcione/banner2.jpg', title: 'NUEVA TEMPORADA', subtitle: 'Platos, vasos, copas y más' },
-  { id: 'al-b3', image_url: '/img/Catalogo/alcione/banner3.jpg', title: 'COMPLETÁ TU HOGAR', subtitle: 'Cortinas, acolchados, cuadros y deco' },
+  { id: 'al-b1', image_url: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1600&q=80', title: 'COLECCIÓN EXCLUSIVA 2026', subtitle: 'Piezas de diseño y arte interior para espacios extraordinarios' },
+  { id: 'al-b2', image_url: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1600&q=80', title: 'CRISTALERÍA & VAJILLA FINA', subtitle: 'La excelencia en cada detalle para tu mesa' },
+  { id: 'al-b3', image_url: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1600&q=80', title: 'TEXTILES & ILUMINACIÓN', subtitle: 'Calidez y sofisticación para dormitorios y salas de estar' },
 ];
 
 export const ALCIONE_CONFIG: TenantConfig = {
   slug: 'alcione',
   name: 'ALCIONE',
   tagline: 'Deco & Hogar',
-  shortDescription: 'Decoración para tu hogar al mejor precio. Platos, vasos, cortinas, lámparas, acolchados, espejos, manteles, canastos, cuadros y más.',
+  shortDescription: 'Alta decoración e interiorismo contemporáneo. Platos, vasos, cortinas, lámparas, acolchados, espejos, manteles, canastos, cuadros y más.',
   logo: '/img/logo/logoalcione.jpg',
   favicon: '/img/logo/logoalcione.jpg',
   primaryColor: '#1A5B6B',
@@ -171,12 +171,12 @@ export const ALCIONE_CONFIG: TenantConfig = {
     hours: 'Lunes a viernes 10 a 13 y 17 a 20 hs',
     hours_saturday: 'Sábados 10 a 13 hs',
   },
-  searchPlaceholder: 'Buscar platos, vasos, cortinas, lámparas...',
+  searchPlaceholder: 'Buscar platos, vasos, cortinas, lámparas, espejos...',
   splash: {
-    badge: '🛒 DECO AL MEJOR PRECIO ❤️',
-    tags: ['Vajilla & Mesa', 'Cortinas & Textiles', 'Iluminación & Deco'],
-    ctaText: 'VER CATÁLOGO',
-    footerText: 'Tocá en cualquier lugar para ingresar',
+    badge: 'EXCLUSIVIDAD & DISEÑO INTERIOR',
+    tags: ['Vajilla & Mesa Fina', 'Textiles & Cortinas', 'Iluminación de Diseño'],
+    ctaText: 'EXPLORAR COLECCIÓN',
+    footerText: 'Tocá en cualquier lugar para ingresar a la experiencia',
   },
 };
 

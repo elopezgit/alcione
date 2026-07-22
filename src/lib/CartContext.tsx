@@ -24,7 +24,7 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 /* ─── Persistencia en localStorage ─── */
-const DEFAULT_STORAGE_KEY = 'mrcerdo_cart';
+const DEFAULT_STORAGE_KEY = 'alcione_cart';
 
 function saveCart(items: CartItem[], key: string) {
   try {

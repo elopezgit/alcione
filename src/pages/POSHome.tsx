@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { getEmpresaId } from '../lib/getEmpresa';
-import { filterAlcioneCategories, filterAlcioneProducts } from '../lib/defaultCatalog';
+import { filterAlcioneCategories, filterAlcioneProducts, resolveProductImage } from '../lib/defaultCatalog';
 import { useCart } from '../lib/CartContext';
 import { useToast } from '../hooks/useToast';
 import { Search, Plus, Minus, Trash2, Wallet, CreditCard, Send, Coffee, Utensils, X, CheckCircle } from 'lucide-react';
@@ -19,11 +19,11 @@ interface Category {
 interface Product {
   id: string;
   name: string;
-  description: string;
+  description?: string;
   price: number;
   category_id: string;
   image_url?: string;
-  is_active: boolean;
+  is_active?: boolean;
   code?: string;
 }
 
@@ -272,11 +272,12 @@ export default function POSHome({ empresaSlug }: { empresaSlug: string }) {
                     </div>
                   )}
                   <div className="w-full h-24 bg-stone-100 rounded-lg mb-3 overflow-hidden flex items-center justify-center">
-                    {product.image_url ? (
-                      <img src={product.image_url} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-                    ) : (
-                      <Utensils className="text-stone-300" size={32} aria-hidden="true" />
-                    )}
+                    <img 
+                      src={resolveProductImage(product)} 
+                      alt={product.name} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                      loading="lazy" 
+                    />
                   </div>
                   <h3 className="font-bold text-stone-800 text-sm leading-tight mb-1 line-clamp-2 flex-1">{product.name}</h3>
                   <p className="font-black text-[#A12C25]">${product.price.toLocaleString('es-AR')}</p>

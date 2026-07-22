@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Minus, Plus } from 'lucide-react';
 import Badge from '../ui/Badge';
+import { resolveProductImage } from '../../lib/defaultCatalog';
 
 interface Product {
   id: string;
@@ -29,13 +30,13 @@ export default function ProductModal({
   onAddToCart,
   tenantName = 'ALCIONE',
   tenantPrimaryColor = '#1A5B6B',
-  tenantTagline = ''
+  tenantTagline = 'Deco & Hogar'
 }: ProductModalProps) {
   const [quantity, setQuantity] = useState(1);
   const [notes, setNotes] = useState('');
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && product) {
       setQuantity(1);
       setNotes('');
     }
@@ -49,13 +50,14 @@ export default function ProductModal({
   };
 
   const getPlaceholder = (name: string) => {
-    const n = name.toLowerCase();
-    if (n.includes('plato') || n.includes('vaso') || n.includes('copa')) return 'Ej: Juego completo, embalaje para regalo...';
-    if (n.includes('cortina')) return 'Ej: Medidas personalizadas, color alternativo...';
-    if (n.includes('lámpara') || n.includes('lampara')) return 'Ej: Tipo de luz cálida/fría, voltaje...';
-    if (n.includes('acolchado') || n.includes('colcha')) return 'Ej: Medida exacta, color preferido...';
-    if (n.includes('cuadro') || n.includes('lámina') || n.includes('lamina')) return 'Ej: Orientación horizontal/vertical, marco...';
-    return 'Ej: Aclaraciones especiales para tu pedido...';
+    const lower = name.toLowerCase();
+    if (lower.includes('plato') || lower.includes('copa') || lower.includes('vaso')) {
+      return 'Ej: Para envolver como regalo, sin etiqueta de precio...';
+    }
+    if (lower.includes('cortina') || lower.includes('acolchado')) {
+      return 'Ej: Confirmar tono o solicitar medida especial...';
+    }
+    return 'Ej: Aclaración especial sobre la entrega o el producto...';
   };
 
   const primaryColor = tenantPrimaryColor;
@@ -85,18 +87,18 @@ export default function ProductModal({
           >
             <div className="relative h-60 bg-stone-900 shrink-0">
               <img 
-                src={product.image_url || '/img/Catalogo/bondiola.png'} 
+                src={resolveProductImage(product)} 
                 alt={product.name}
-                className="w-full h-full object-cover opacity-85"
+                className="w-full h-full object-cover opacity-90"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/20 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-900/20 to-transparent"></div>
               
               <div className="absolute bottom-4 left-6 z-10 flex flex-col items-start gap-1">
                 <Badge variant="primary" size="sm" style={{ backgroundColor: primaryColor }}>
-                  {tenantName} &bull; OFICIAL
+                  {tenantName} &bull; COLECCIÓN VIP
                 </Badge>
-                <div className="text-xs font-bold text-amber-300 uppercase tracking-wider drop-shadow-md mt-0.5">
-                  {tenantTagline || '⭐ PRODUCTO SELECCIONADO'}
+                <div className="text-xs font-serif tracking-wider text-[#D4A76A] uppercase drop-shadow-md mt-0.5">
+                  {tenantTagline || 'PIEZA DE DISEÑO EXCLUSIVA'}
                 </div>
               </div>
 

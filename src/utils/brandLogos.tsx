@@ -167,9 +167,9 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({ brand, className = '', siz
 
   // Fallback for any other brand
   return (
-    <div className={`inline-flex items-center gap-1.5 bg-[#A12C25]/10 border border-[#A12C25]/30 px-2.5 py-1 rounded-lg shadow-sm ${sizeClasses} ${className}`}>
-      <span className="w-2 h-2 rounded-full bg-[#A12C25]"></span>
-      <span className="font-black text-stone-900 text-xs uppercase tracking-wider">{brand || 'MR CERDO'}</span>
+    <div className={`inline-flex items-center gap-1.5 bg-stone-900 border border-[#D4A76A]/40 px-2.5 py-1 rounded-lg shadow-sm ${sizeClasses} ${className}`}>
+      <span className="w-1.5 h-1.5 rounded-full bg-[#D4A76A]"></span>
+      <span className="font-serif font-bold text-white text-xs uppercase tracking-wider">{brand || 'ALCIONE'}</span>
     </div>
   );
 };

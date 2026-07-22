@@ -10,12 +10,25 @@ interface CartModalProps {
   empresaName: string;
   empresaPhone: string;
   empresaAlias?: string;
+  empresaCbu?: string;
+  tenantPrimaryColor?: string;
+  tenantName?: string;
   onOrderPlaced?: (orderId: string) => void;
 }
 
-export default function CartModal({ empresaId, empresaName, empresaPhone, empresaAlias, onOrderPlaced }: CartModalProps) {
+export default function CartModal({ 
+  empresaId, 
+  empresaName, 
+  empresaPhone, 
+  empresaAlias, 
+  empresaCbu,
+  tenantPrimaryColor = '#1A5B6B',
+  tenantName = 'Alcione — Deco & Hogar',
+  onOrderPlaced 
+}: CartModalProps) {
   const { isCartOpen, setIsCartOpen, items, updateQuantity, removeFromCart, total, clearCart } = useCart();
   const toast = useToast();
+  const primaryColor = tenantPrimaryColor;
 
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
@@ -24,13 +37,24 @@ export default function CartModal({ empresaId, empresaName, empresaPhone, empres
   const [paymentMethod, setPaymentMethod] = useState<'efectivo' | 'transferencia'>('efectivo');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [copiedCbu, setCopiedCbu] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const displayAlias = empresaAlias || 'mrcerdo.mp';
+  const displayAlias = empresaAlias || 'alcione.mp';
+  const displayTitular = tenantName || empresaName || 'Alcione — Deco & Hogar';
+
   const handleCopyAlias = () => {
     navigator.clipboard.writeText(displayAlias);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleCopyCbu = () => {
+    if (empresaCbu) {
+      navigator.clipboard.writeText(empresaCbu);
+      setCopiedCbu(true);
+      setTimeout(() => setCopiedCbu(false), 2000);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -118,14 +142,14 @@ export default function CartModal({ empresaId, empresaName, empresaPhone, empres
             className="fixed bottom-0 left-0 right-0 top-12 md:top-1/2 md:bottom-auto md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:max-w-xl md:max-h-[88vh] bg-white text-stone-900 z-[101] rounded-t-3xl md:rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-stone-200"
           >
             <div className="px-5 py-4 border-b border-stone-200 flex items-center justify-between bg-stone-50 shrink-0">
-              <h2 className="text-lg font-black text-stone-900 flex items-center gap-2 font-display">
-                <span className="w-2 h-2 rounded-full bg-[#A12C25]"></span>
-                Mi Pedido
+              <h2 className="text-lg font-serif font-bold text-stone-900 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: primaryColor }}></span>
+                Mi Pedido VIP
               </h2>
               <button
                 onClick={() => setIsCartOpen(false)}
                 aria-label="Cerrar carrito"
-                className="p-2 bg-white text-stone-500 border border-stone-200 rounded-xl hover:bg-[#A12C25] hover:text-white transition-colors focus-ring"
+                className="p-2 bg-white text-stone-500 border border-stone-200 rounded-xl hover:bg-stone-900 hover:text-white transition-colors focus-ring"
               >
                 <X size={18} />
               </button>
@@ -134,9 +158,9 @@ export default function CartModal({ empresaId, empresaName, empresaPhone, empres
             <div className="flex-1 overflow-y-auto hide-scrollbar bg-white">
               {items.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full p-8 text-stone-400">
-                  <span className="text-5xl mb-4 opacity-30" aria-hidden="true">🛒</span>
-                  <p className="text-base font-bold text-stone-800 font-display">Tu pedido está vacío</p>
-                  <p className="text-sm mt-1 text-stone-500">Agregá tus embutidos favoritos</p>
+                  <div className="w-12 h-12 rounded-full border border-stone-200 flex items-center justify-center mb-4 text-stone-300 font-serif font-bold text-lg">VIP</div>
+                  <p className="text-base font-serif font-bold text-stone-800">Tu pedido está vacío</p>
+                  <p className="text-xs mt-1 text-stone-500 text-center max-w-[220px]">Explora nuestras colecciones y selecciona tus piezas exclusivas</p>
                 </div>
               ) : (
                 <div className="p-4 space-y-4">
@@ -145,14 +169,14 @@ export default function CartModal({ empresaId, empresaName, empresaPhone, empres
                       <div key={idx} className="flex gap-3 items-start border-b border-stone-200/80 pb-3 last:border-0 last:pb-0">
                         <div className="flex-1 min-w-0">
                           <h4 className="font-bold text-stone-900 text-sm">{item.name}</h4>
-                          {item.notes && <p className="text-[11px] text-[#A12C25] font-medium mt-0.5">"{item.notes}"</p>}
+                          {item.notes && <p className="text-[11px] font-medium mt-0.5" style={{ color: primaryColor }}>"{item.notes}"</p>}
                           <div className="font-extrabold text-stone-800 mt-0.5 text-sm">${(item.price * item.quantity).toLocaleString('es-AR')}</div>
                         </div>
                         <div className="flex flex-col items-end gap-2 shrink-0">
                           <button
                             onClick={() => removeFromCart(item.id, item.notes)}
                             aria-label={`Eliminar ${item.name}`}
-                            className="text-stone-400 hover:text-[#A12C25] transition-colors focus-ring"
+                            className="text-stone-400 hover:text-red-600 transition-colors focus-ring"
                           >
                             <Trash2 size={15} />
                           </button>
@@ -168,7 +192,8 @@ export default function CartModal({ empresaId, empresaName, empresaPhone, empres
                             <button
                               onClick={() => updateQuantity(item.id, item.quantity + 1, item.notes)}
                               aria-label={`Aumentar cantidad de ${item.name}`}
-                              className="w-7 h-7 flex items-center justify-center bg-[#A12C25] text-white hover:brightness-110 transition-all focus-ring"
+                              className="w-7 h-7 flex items-center justify-center text-white hover:brightness-110 transition-all focus-ring"
+                              style={{ backgroundColor: primaryColor }}
                             >
                               <Plus size={12} />
                             </button>
@@ -197,7 +222,8 @@ export default function CartModal({ empresaId, empresaName, empresaPhone, empres
                           type="text"
                           value={customerName}
                           onChange={e => setCustomerName(e.target.value)}
-                          className="w-full bg-white border border-stone-200 text-stone-900 rounded-xl p-2.5 text-sm focus:border-[#A12C25] outline-none placeholder:text-stone-400 shadow-sm focus-ring"
+                          className="w-full bg-white border border-stone-200 text-stone-900 rounded-xl p-2.5 text-sm focus:ring-1 outline-none placeholder:text-stone-400 shadow-sm transition-all"
+                          style={{ borderColor: customerName ? primaryColor : undefined }}
                           placeholder="Juan Pérez"
                         />
                       </div>
@@ -209,7 +235,8 @@ export default function CartModal({ empresaId, empresaName, empresaPhone, empres
                           type="tel"
                           value={customerPhone}
                           onChange={e => setCustomerPhone(e.target.value)}
-                          className="w-full bg-white border border-stone-200 text-stone-900 rounded-xl p-2.5 text-sm focus:border-[#A12C25] outline-none placeholder:text-stone-400 shadow-sm focus-ring"
+                          className="w-full bg-white border border-stone-200 text-stone-900 rounded-xl p-2.5 text-sm focus:ring-1 outline-none placeholder:text-stone-400 shadow-sm transition-all"
+                          style={{ borderColor: customerPhone ? primaryColor : undefined }}
                           placeholder="381 123 4567"
                         />
                       </div>
@@ -217,14 +244,15 @@ export default function CartModal({ empresaId, empresaName, empresaPhone, empres
 
                     <div>
                       <label className="block text-[10px] font-bold text-stone-500 mb-0.5 uppercase tracking-wider flex items-center gap-1" htmlFor="delivery-address">
-                        <MapPin size={12} className="text-[#A12C25]" /> Dirección
+                        <MapPin size={12} style={{ color: primaryColor }} /> Dirección
                       </label>
                       <input
                         id="delivery-address"
                         type="text"
                         value={deliveryAddress}
                         onChange={e => setDeliveryAddress(e.target.value)}
-                        className="w-full bg-white border border-stone-200 text-stone-900 rounded-xl p-2.5 text-sm focus:border-[#A12C25] outline-none placeholder:text-stone-400 shadow-sm focus-ring"
+                        className="w-full bg-white border border-stone-200 text-stone-900 rounded-xl p-2.5 text-sm focus:ring-1 outline-none placeholder:text-stone-400 shadow-sm transition-all"
+                        style={{ borderColor: deliveryAddress ? primaryColor : undefined }}
                         placeholder="Calle 123 (opcional si retira)"
                       />
                     </div>
@@ -235,8 +263,9 @@ export default function CartModal({ empresaId, empresaName, empresaPhone, empres
                         id="comment"
                         value={comment}
                         onChange={e => setComment(e.target.value)}
-                        className="w-full bg-white border border-stone-200 text-stone-900 rounded-xl p-2.5 text-sm focus:border-[#A12C25] outline-none resize-none h-14 placeholder:text-stone-400 shadow-sm focus-ring"
-                        placeholder="Ej: Preferencia de horario"
+                        className="w-full bg-white border border-stone-200 text-stone-900 rounded-xl p-2.5 text-sm focus:ring-1 outline-none resize-none h-14 placeholder:text-stone-400 shadow-sm transition-all"
+                        style={{ borderColor: comment ? primaryColor : undefined }}
+                        placeholder="Instrucciones especiales para el pedido..."
                       />
                     </div>
 
@@ -248,7 +277,8 @@ export default function CartModal({ empresaId, empresaName, empresaPhone, empres
                           onClick={() => setPaymentMethod('efectivo')}
                           aria-label="Pagar en efectivo"
                           aria-pressed={paymentMethod === 'efectivo'}
-                          className={`flex items-center justify-center gap-2 p-2.5 font-bold text-xs rounded-xl transition-all border shadow-sm focus-ring ${paymentMethod === 'efectivo' ? 'bg-[#A12C25] border-[#A12C25] text-white' : 'bg-white border-stone-200 text-stone-600 hover:border-[#A12C25]'}`}
+                          className={`flex items-center justify-center gap-2 p-2.5 font-bold text-xs rounded-xl transition-all border shadow-sm focus-ring ${paymentMethod === 'efectivo' ? 'text-white' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
+                          style={paymentMethod === 'efectivo' ? { backgroundColor: primaryColor, borderColor: primaryColor } : {}}
                         >
                           <Wallet size={14} /> Efectivo
                         </button>
@@ -257,7 +287,8 @@ export default function CartModal({ empresaId, empresaName, empresaPhone, empres
                           onClick={() => setPaymentMethod('transferencia')}
                           aria-label="Pagar con transferencia"
                           aria-pressed={paymentMethod === 'transferencia'}
-                          className={`flex items-center justify-center gap-2 p-2.5 font-bold text-xs rounded-xl transition-all border shadow-sm focus-ring ${paymentMethod === 'transferencia' ? 'bg-[#A12C25] border-[#A12C25] text-white' : 'bg-white border-stone-200 text-stone-600 hover:border-[#A12C25]'}`}
+                          className={`flex items-center justify-center gap-2 p-2.5 font-bold text-xs rounded-xl transition-all border shadow-sm focus-ring ${paymentMethod === 'transferencia' ? 'text-white' : 'bg-white border-stone-200 text-stone-600 hover:border-stone-400'}`}
+                          style={paymentMethod === 'transferencia' ? { backgroundColor: primaryColor, borderColor: primaryColor } : {}}
                         >
                           <CreditCard size={14} /> Transferencia
                         </button>
@@ -267,34 +298,51 @@ export default function CartModal({ empresaId, empresaName, empresaPhone, empres
                         <motion.div
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: 'auto' }}
-                          className="mt-3 overflow-hidden border border-[#C9A962]/20 bg-[#231C17]"
+                          className="mt-3 overflow-hidden rounded-xl border border-stone-200 bg-stone-900 text-white shadow-inner"
                         >
-                          <div className="p-2.5 bg-[#D4262F]/10 text-[#D4262F] text-[10px] font-bold text-center uppercase tracking-wider border-b border-[#C9A962]/10">
-                            Datos para transferencia
+                          <div className="p-2.5 bg-black/40 text-[#D4A76A] text-[10px] font-bold text-center uppercase tracking-wider border-b border-stone-800 flex items-center justify-center gap-1.5">
+                            <CreditCard size={13} className="text-[#D4A76A]" /> Datos para Transferencia VIP
                           </div>
-                          <div className="p-3 flex flex-col gap-2">
-                            <div className="flex justify-between items-center bg-[#1A1410] p-2.5 border border-slate-800">
-                              <span className="text-[10px] text-slate-500">Titular</span>
-                              <span className="text-xs font-bold text-white">MrCerdo Embutidos</span>
+                          <div className="p-3.5 flex flex-col gap-2.5">
+                            <div className="flex justify-between items-center bg-stone-950/80 rounded-lg p-3 border border-stone-800">
+                              <span className="text-[11px] text-stone-400 font-medium">Titular / Cuenta</span>
+                              <span className="text-xs font-serif font-bold tracking-wide text-white">{displayTitular}</span>
                             </div>
-                            <div className="flex justify-between items-center bg-[#1A1410] p-2.5 border border-slate-800">
-                              <span className="text-[10px] text-slate-500">Alias</span>
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs font-bold text-[#C9A962]">{displayAlias}</span>
+                            <div className="flex justify-between items-center bg-stone-950/80 rounded-lg p-3 border border-stone-800">
+                              <span className="text-[11px] text-stone-400 font-medium">Alias MP</span>
+                              <div className="flex items-center gap-2.5">
+                                <span className="text-sm font-bold tracking-wider text-[#D4A76A] font-mono">{displayAlias}</span>
                                 <button
                                   type="button"
                                   onClick={handleCopyAlias}
-                                  className="p-1 bg-[#D4262F]/20 text-[#D4262F] hover:bg-[#D4262F]/40 transition-colors focus-ring"
-                                  title="Copiar"
+                                  className="p-1.5 bg-[#D4A76A]/20 text-[#D4A76A] hover:bg-[#D4A76A]/40 rounded-md transition-colors focus-ring"
+                                  title="Copiar Alias"
                                   aria-label="Copiar alias"
                                 >
-                                  {copied ? <CheckCircle2 size={14} className="text-green-400" /> : <Copy size={14} />}
+                                  {copied ? <CheckCircle2 size={15} className="text-green-400" /> : <Copy size={15} />}
                                 </button>
                               </div>
                             </div>
+                            {empresaCbu && (
+                              <div className="flex justify-between items-center bg-stone-950/80 rounded-lg p-3 border border-stone-800">
+                                <span className="text-[11px] text-stone-400 font-medium">CBU / CVU</span>
+                                <div className="flex items-center gap-2.5">
+                                  <span className="text-xs font-bold tracking-wider text-stone-300 font-mono">{empresaCbu}</span>
+                                  <button
+                                    type="button"
+                                    onClick={handleCopyCbu}
+                                    className="p-1.5 bg-[#D4A76A]/20 text-[#D4A76A] hover:bg-[#D4A76A]/40 rounded-md transition-colors focus-ring"
+                                    title="Copiar CBU"
+                                    aria-label="Copiar CBU"
+                                  >
+                                    {copiedCbu ? <CheckCircle2 size={15} className="text-green-400" /> : <Copy size={15} />}
+                                  </button>
+                                </div>
+                              </div>
+                            )}
                           </div>
-                          <p className="text-[10px] text-slate-500 text-center px-3 pb-3">
-                            Al finalizar enviamos el detalle por WhatsApp
+                          <p className="text-[11px] text-stone-400 text-center px-4 pb-3 italic font-serif">
+                            Al confirmar tu pedido, podrás adjuntar el comprobante directamente por WhatsApp.
                           </p>
                         </motion.div>
                       )}
@@ -315,7 +363,8 @@ export default function CartModal({ empresaId, empresaName, empresaPhone, empres
                   type="submit"
                   form="checkout-form"
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-[#A12C25] to-[#D9381E] hover:brightness-110 text-white py-3.5 rounded-2xl font-black text-sm uppercase tracking-wider transition-all active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100 shadow-md shadow-[#A12C25]/25 focus-ring"
+                  className="w-full text-white py-3.5 rounded-2xl font-black text-sm uppercase tracking-wider transition-all active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100 shadow-md focus-ring"
+                  style={{ backgroundColor: primaryColor }}
                 >
                   {isSubmitting ? (
                     <span className="flex items-center justify-center gap-2">

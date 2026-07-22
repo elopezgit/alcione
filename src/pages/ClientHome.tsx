@@ -13,6 +13,7 @@ import { useTenantTheme } from '../lib/useTenantTheme';
 import { ProductCardSkeleton } from '../components/ui/Skeleton';
 import ErrorRetry from '../components/ui/ErrorRetry';
 import Badge from '../components/ui/Badge';
+import { resolveProductImage, resolveCategoryImage, resolveBannerImage } from '../lib/defaultCatalog';
 
 /* ─── Interfaces ─── */
 interface Empresa {
@@ -471,13 +472,13 @@ export default function ClientHome() {
               className="flex gap-4 px-4 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-2"
               style={{ scrollBehavior: 'smooth' }}
             >
-              {displayBanners.map((banner) => (
+              {displayBanners.map((banner, idx) => (
                 <div 
                   key={banner.id} 
                   className="shrink-0 w-[85vw] max-w-[340px] md:w-96 h-44 rounded-3xl overflow-hidden relative border border-stone-200 shadow-md block bg-stone-900 snap-center group/banner cursor-pointer"
                 >
                   <img 
-                    src={banner.image_url} 
+                    src={resolveBannerImage(banner, idx)} 
                     alt={banner.title || `Promoción ${config.name}`} 
                     className="w-full h-full object-cover opacity-75 group-hover/banner:scale-105 transition-transform duration-500" 
                     loading="lazy"
@@ -535,36 +536,59 @@ export default function ClientHome() {
         {/* ═══════ CATEGORY SELECTOR ═══════ */}
         {!searchQuery && (
           <section className="px-4 mb-6">
-            <h2 className="text-base font-black text-stone-900 mb-3 tracking-tight uppercase flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: primaryColor }} aria-hidden="true"></span>
-              Categorías Oficiales
+            <h2 className="text-sm font-serif font-bold text-stone-900 mb-3.5 tracking-widest uppercase flex items-center gap-2">
+              <span className="w-1.5 h-4 bg-[#D4A76A] rounded-full" aria-hidden="true"></span>
+              Colecciones & Categorías
             </h2>
             
-            <div className="flex overflow-x-auto hide-scrollbar gap-3 pb-2 -mx-4 px-4 snap-x snap-mandatory">
+            <div className="flex overflow-x-auto hide-scrollbar gap-3.5 pb-3 -mx-4 px-4 snap-x snap-mandatory">
               <motion.button
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3, delay: 0 }}
                 onClick={() => handleSelectCategory('todas')}
                 aria-label="Seleccionar todas las categorías"
-                className="snap-start shrink-0 focus-ring rounded-2xl"
+                className="snap-start shrink-0 focus-ring rounded-2xl group/all"
               >
                 <div 
-                  className={`w-20 h-28 rounded-2xl flex flex-col items-center justify-center gap-1.5 transition-all duration-200 border ${activeCategory === 'todas' ? 'text-white shadow-md scale-105' : 'bg-white border-stone-200 text-stone-700 hover:border-primary shadow-sm'}`}
-                  style={activeCategory === 'todas' ? { background: `linear-gradient(135deg, ${primaryColor}, ${config.colors['primary-light']})`, borderColor: primaryColor } : {}}
+                  className={`w-36 h-52 sm:w-40 sm:h-60 rounded-2xl p-4 flex flex-col justify-between relative overflow-hidden transition-all duration-300 border ${
+                    activeCategory === 'todas'
+                      ? 'ring-2 ring-[#D4A76A] ring-offset-2 shadow-xl scale-[1.03] border-[#D4A76A]'
+                      : 'border-stone-200/80 shadow-md hover:shadow-xl hover:border-[#D4A76A]/60'
+                  }`}
                 >
-                  <div 
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center ${activeCategory === 'todas' ? 'bg-black/20 text-white' : 'bg-stone-100'}`}
-                    style={activeCategory !== 'todas' ? { color: primaryColor } : {}}
-                  >
-                    <Star size={20} aria-hidden="true" />
+                  <img
+                    src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80"
+                    alt="Todas las categorías"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover/all:scale-110"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-stone-950/95 via-stone-900/60 to-black/40" />
+                  
+                  <div className="relative z-10 flex flex-col h-full justify-between">
+                    <div className="flex justify-between items-center">
+                      <div className="w-7 h-7 rounded-full bg-[#D4A76A]/20 border border-[#D4A76A]/40 flex items-center justify-center text-[#D4A76A]">
+                        <Star size={13} aria-hidden="true" />
+                      </div>
+                      {activeCategory === 'todas' && (
+                        <span className="text-[9px] uppercase tracking-widest font-bold text-[#D4A76A] bg-black/70 px-2 py-0.5 rounded-full border border-[#D4A76A]/40 backdrop-blur-sm">
+                          Activa
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-left">
+                      <h3 className="text-base font-serif font-semibold text-white drop-shadow-md leading-tight tracking-wide mb-1">
+                        Colección Completa
+                      </h3>
+                      <p className="text-[10px] text-[#D4A76A] font-medium tracking-wider uppercase">
+                        {products.length} {products.length === 1 ? 'Pieza' : 'Piezas'}
+                      </p>
+                    </div>
                   </div>
-                  <span className="text-[11px] font-extrabold uppercase tracking-wider">Todas</span>
                 </div>
               </motion.button>
 
               {categories.map((cat, i) => {
-                const colors = getCategoryStyle(cat.name);
                 const isActive = activeCategory === cat.id;
                 const productCount = products.filter(p => p.category_id === cat.id).length;
                 return (
@@ -573,29 +597,42 @@ export default function ClientHome() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.05 * (i + 1) }}
-                    whileTap={{ scale: 0.95 }}
+                    whileTap={{ scale: 0.96 }}
                     onClick={() => handleSelectCategory(cat.id)}
                     aria-label={`Categoría ${cat.name}`}
-                    className="snap-start shrink-0 focus-ring rounded-2xl"
+                    className="snap-start shrink-0 focus-ring rounded-2xl group/cat"
                   >
                     <div
-                      className={`w-36 h-28 rounded-2xl p-4 flex flex-col justify-between relative overflow-hidden transition-all duration-200 border ${isActive ? 'ring-2 ring-offset-2 shadow-md scale-[1.03]' : 'border-stone-200/80 shadow-sm hover:shadow-md'}`}
-                      style={{ 
-                        background: `linear-gradient(135deg, ${colors.from}, ${colors.to})`,
-                        ...(isActive ? { boxShadow: `0 0 0 2px ${primaryColor}`, '--tw-ring-offset-width': '2px' } as React.CSSProperties : {})
-                      }}
+                      className={`w-36 h-52 sm:w-40 sm:h-60 rounded-2xl p-4 flex flex-col justify-between relative overflow-hidden transition-all duration-300 border ${
+                        isActive
+                          ? 'ring-2 ring-[#D4A76A] ring-offset-2 shadow-xl scale-[1.03] border-[#D4A76A]'
+                          : 'border-stone-200/80 shadow-md hover:shadow-xl hover:border-[#D4A76A]/60'
+                      }`}
                     >
-                      <div className="absolute -right-4 -top-4 text-6xl opacity-20 select-none" aria-hidden="true">
-                        {cat.icon}
-                      </div>
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
+                      <img
+                        src={resolveCategoryImage(cat)}
+                        alt={cat.name}
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover/cat:scale-110"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-stone-950/95 via-stone-900/50 to-black/30 transition-opacity duration-300 group-hover/cat:opacity-90" />
+                      
                       <div className="relative z-10 flex flex-col h-full justify-between">
-                        <div className="w-10 h-10 rounded-xl bg-black/25 backdrop-blur-sm flex items-center justify-center text-2xl border border-white/20 shadow-inner">
-                          {cat.icon}
+                        <div className="flex justify-between items-center w-full">
+                          <span className="w-6 h-0.5 bg-[#D4A76A] rounded-full" aria-hidden="true" />
+                          {isActive && (
+                            <span className="text-[9px] uppercase tracking-widest font-bold text-[#D4A76A] bg-black/70 px-2 py-0.5 rounded-full border border-[#D4A76A]/40 backdrop-blur-sm">
+                              Activa
+                            </span>
+                          )}
                         </div>
                         <div className="text-left">
-                          <span className="block text-sm font-black text-white drop-shadow-sm leading-tight uppercase">{cat.name}</span>
-                          <span className="text-[10px] text-white/90 font-semibold">{productCount} productos</span>
+                          <h3 className="text-base font-serif font-semibold text-white drop-shadow-md leading-tight tracking-wide mb-1">
+                            {cat.name}
+                          </h3>
+                          <p className="text-[10px] text-stone-300 font-medium tracking-wider uppercase">
+                            {productCount} {productCount === 1 ? 'Pieza' : 'Piezas'}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -663,9 +700,12 @@ export default function ClientHome() {
 
             return (
               <div key={category.id} className="mb-10">
-                <h2 className="text-lg font-black text-stone-900 mb-3.5 flex items-center gap-2.5 uppercase tracking-wide">
-                  <span className="w-8 h-8 rounded-xl bg-white border border-stone-200 shadow-sm flex items-center justify-center text-lg">{category.icon}</span> 
+                <h2 className="text-xl font-serif font-bold text-stone-900 mb-4 flex items-center gap-3 tracking-wide">
+                  <span className="w-1.5 h-6 bg-[#D4A76A] rounded-full" aria-hidden="true"></span>
                   <span>{category.name}</span>
+                  <span className="text-xs font-sans font-semibold text-stone-400 uppercase tracking-widest ml-1">
+                    ({categoryProducts.length} {categoryProducts.length === 1 ? 'pieza' : 'piezas'})
+                  </span>
                 </h2>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -750,17 +790,17 @@ export default function ClientHome() {
                           onMouseLeave={(e) => { e.currentTarget.style.borderColor = ''; }}
                         >
                           <div className="z-10 flex justify-between items-center w-full">
-                            <span className="text-sm select-none">{category.icon}</span>
+                            <span className="text-[10px] font-bold text-stone-300 tracking-widest uppercase">{category.name}</span>
                             <span 
-                              className="bg-white/95 font-black text-[9px] px-1.5 py-0.5 rounded border border-stone-200 tracking-wider uppercase shadow-sm"
-                              style={{ color: primaryColor }}
+                              className="bg-white/95 font-serif font-bold text-[9px] px-1.5 py-0.5 rounded border border-stone-200 tracking-wider uppercase shadow-sm"
+                              style={{ color: '#D4A76A' }}
                             >
-                              DECO
+                              VIP
                             </span>
                           </div>
 
                           <img 
-                            src={product.image_url || config.fallbackBanners[0]?.image_url || ''} 
+                            src={resolveProductImage(product)} 
                             alt={product.name}
                             className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500"
                             loading="lazy"
@@ -855,6 +895,9 @@ export default function ClientHome() {
         empresaName={empresa.name}
         empresaPhone={empresa.phone}
         empresaAlias={empresa.alias || ''}
+        empresaCbu={empresa.cbu || ''}
+        tenantPrimaryColor={primaryColor}
+        tenantName={config.name}
         onOrderPlaced={(orderId) => {
           setActiveOrderId(orderId);
           setIsTrackerOpen(true);
