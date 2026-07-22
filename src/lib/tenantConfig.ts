@@ -6,27 +6,9 @@
  */
 
 /* ─── Tipos Compartidos ─── */
-export interface DefaultCategory {
-  id: string;
-  name: string;
-  icon: string;
-  description?: string;
-}
+import { DefaultCategory, DefaultProduct } from './defaultCatalog';
+export type { DefaultCategory, DefaultProduct };
 
-export interface DefaultProduct {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category_id: string;
-  image_url: string;
-  code: string;
-  sort_order: number;
-  is_active: boolean;
-  badge?: string;
-  profile?: string[];
-  [key: string]: any;
-}
 
 export interface Banner {
   id: string;

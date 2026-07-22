@@ -4,7 +4,7 @@ import { getEmpresaId } from '../lib/getEmpresa';
 import { filterAlcioneCategories, filterAlcioneProducts, resolveProductImage } from '../lib/defaultCatalog';
 import { useCart } from '../lib/CartContext';
 import { useToast } from '../hooks/useToast';
-import { Search, Plus, Minus, Trash2, Wallet, CreditCard, Send, Coffee, Utensils, X, CheckCircle } from 'lucide-react';
+import { Search, Plus, Minus, Trash2, Wallet, CreditCard, Send, Coffee, X, CheckCircle } from 'lucide-react';
 import { ProductCardSkeleton } from '../components/ui/Skeleton';
 import EmptyState from '../components/ui/EmptyState';
 import Badge from '../components/ui/Badge';

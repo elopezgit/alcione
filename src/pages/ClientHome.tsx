@@ -197,10 +197,6 @@ export default function ClientHome() {
     return matchesSearch && matchesCategory && matchesKeyword;
   });
 
-  const getCategoryStyle = (catName: string) => {
-    return config.categoryColors[catName] || { from: primaryColor, to: primaryColor, shadow: `${primaryColor}40` };
-  };
-
   const getProductQuantity = (productId: string) => {
     return items.filter(i => i.id === productId).reduce((acc, curr) => acc + curr.quantity, 0);
   };
