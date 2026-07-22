@@ -9,17 +9,19 @@ function App() {
     <ToastProvider>
       <BrowserRouter>
         <Routes>
-          {/* Redirigir la raíz a /mrcerdo */}
-          <Route path="/" element={<Navigate to="/mrcerdo" replace />} />
+          {/* Redirigir la raíz a /alcione */}
+          <Route path="/" element={<Navigate to="/alcione" replace />} />
           
-          {/* Rutas Multi-Tenant (segmentadas por empresa) */}
+          {/* Ruta del catálogo público */}
           <Route path="/:empresaSlug" element={
-            <CartProvider>
+            <CartProvider storageKey="alcione_cart">
               <ClientHome />
             </CartProvider>
           } />
+          
+          {/* Ruta del panel de administración */}
           <Route path="/admin/:empresaSlug" element={
-            <CartProvider>
+            <CartProvider storageKey="alcione_cart">
               <AdminDashboard />
             </CartProvider>
           } />

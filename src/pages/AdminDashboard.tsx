@@ -12,7 +12,7 @@ import { getEmpresaData } from '../lib/getEmpresa';
 import {
   LayoutDashboard, ShoppingBag, Image as ImageIcon, Settings,
   LockKeyhole, LogOut, BarChart3, Store, Menu, X, ChevronLeft,
-  PiggyBank, Home, Clock, AlertCircle,
+  Home, Clock, AlertCircle,
   Phone, MapPin, Copy, Save, DollarSign, ShoppingCart, Users, Activity, Globe
 } from 'lucide-react';
 
@@ -181,7 +181,7 @@ export default function AdminDashboard() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-stone-900 via-slate-900 to-stone-950 flex items-center justify-center p-4">
         <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
-          <div className="w-16 h-16 bg-[#A12C25]/20 text-[#A12C25] rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="w-16 h-16 bg-[#1A5B6B]/20 text-[#1A5B6B] rounded-full flex items-center justify-center mx-auto mb-6">
             <LockKeyhole size={32} />
           </div>
           <h2 className="text-2xl font-black text-white mb-1">Acceso Restringido</h2>
@@ -195,7 +195,7 @@ export default function AdminDashboard() {
                 value={username}
                 onChange={e => setUsername(e.target.value)}
                 aria-label="Nombre de usuario"
-                className="w-full bg-black/50 border border-white/10 text-white p-3 rounded-xl outline-none focus:border-[#A12C25] focus:ring-1 focus:ring-[#A12C25]/30 transition-all placeholder:text-stone-500"
+                className="w-full bg-black/50 border border-white/10 text-white p-3 rounded-xl outline-none focus:border-[#1A5B6B] focus:ring-1 focus:ring-[#1A5B6B]/30 transition-all placeholder:text-stone-500"
               />
             </div>
             <div>
@@ -205,7 +205,7 @@ export default function AdminDashboard() {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 aria-label="Contraseña"
-                className="w-full bg-black/50 border border-white/10 text-white p-3 rounded-xl outline-none focus:border-[#A12C25] focus:ring-1 focus:ring-[#A12C25]/30 transition-all placeholder:text-stone-500"
+                className="w-full bg-black/50 border border-white/10 text-white p-3 rounded-xl outline-none focus:border-[#1A5B6B] focus:ring-1 focus:ring-[#1A5B6B]/30 transition-all placeholder:text-stone-500"
               />
             </div>
             
@@ -214,7 +214,7 @@ export default function AdminDashboard() {
             <button 
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-[#A12C25] to-[#D9381E] text-white font-black py-3 rounded-xl mt-4 active:scale-95 transition-transform disabled:opacity-70 flex justify-center items-center gap-2 focus-ring"
+              className="w-full bg-gradient-to-r from-[#1A5B6B] to-[#2C8A9E] text-white font-black py-3 rounded-xl mt-4 active:scale-95 transition-transform disabled:opacity-70 flex justify-center items-center gap-2 focus-ring"
             >
               {isLoading ? (
                 <>
@@ -238,7 +238,7 @@ export default function AdminDashboard() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-[#FAF8F5] flex">
+      <div className="min-h-screen bg-[#FEFCF8] flex">
         
         {/* ═══ SIDEBAR ═══ */}
         <aside
@@ -259,8 +259,8 @@ export default function AdminDashboard() {
           </button>
 
           <div className={`flex items-center gap-3 mb-8 ${!sidebarOpen && 'lg:justify-center'}`}>
-            <div className="w-10 h-10 rounded-xl bg-[#A12C25]/20 border border-[#A12C25]/30 flex items-center justify-center shrink-0">
-              <PiggyBank size={22} className="text-[#A12C25]" />
+            <div className="w-10 h-10 rounded-xl bg-[#1A5B6B]/20 border border-[#1A5B6B]/30 flex items-center justify-center shrink-0">
+              <Store size={22} className="text-[#1A5B6B]" />
             </div>
             {(sidebarOpen || window.innerWidth >= 1024) && (
               <div className="overflow-hidden whitespace-nowrap">
@@ -286,7 +286,7 @@ export default function AdminDashboard() {
                 className={`
                   w-full flex items-center gap-3 text-left p-3 rounded-lg font-medium transition-all relative
                   ${activeTab === tabId
-                    ? 'bg-gradient-to-r from-[#A12C25] to-[#D9381E] text-white shadow-md'
+                    ? 'bg-gradient-to-r from-[#1A5B6B] to-[#2C8A9E] text-white shadow-md'
                     : 'text-stone-400 hover:bg-white/5 hover:text-stone-200'
                   }
                   ${!sidebarOpen && window.innerWidth >= 1024 ? 'justify-center px-0' : ''}
@@ -332,7 +332,7 @@ export default function AdminDashboard() {
               {(sidebarOpen || window.innerWidth < 1024) && <span>Cerrar Sesión</span>}
             </button>
             
-            <p className="text-[10px] text-stone-600 text-center">MrCerdo OS v1.0</p>
+            <p className="text-[10px] text-stone-600 text-center">{(empresaSlug || 'alcione').toUpperCase()} OS v1.0</p>
           </div>
         </aside>
 
@@ -486,7 +486,7 @@ function DashboardHome({ empresaSlug, setActiveTab }: { empresaSlug: string; set
               label="Tomar Pedido"
               shortcut="7"
               onClick={() => setActiveTab('pos')}
-              color="bg-[#A12C25]/10 text-[#A12C25]"
+              color="bg-[#1A5B6B]/10 text-[#1A5B6B]"
             />
             <QuickActionBtn
               icon={<LayoutDashboard size={18} />}
@@ -559,7 +559,7 @@ function DashboardHome({ empresaSlug, setActiveTab }: { empresaSlug: string; set
           {stats.recentOrders.length > 0 && (
             <button
               onClick={() => setActiveTab('kanban')}
-              className="w-full mt-4 py-2 text-center text-sm font-bold text-primary hover:bg-[#A12C25]/5 rounded-xl transition-colors focus-ring"
+              className="w-full mt-4 py-2 text-center text-sm font-bold text-primary hover:bg-[#1A5B6B]/5 rounded-xl transition-colors focus-ring"
             >
               Ver todos los pedidos →
             </button>
@@ -630,7 +630,7 @@ function ConfigPanel({ empresaSlug }: { empresaSlug: string }) {
             phone: data.phone || '',
             instagram_url: data.instagram_url || '',
             maps_url: data.maps_url || '',
-            alias: data.alias || 'mrcerdo.mp',
+            alias: data.alias || 'alcione.mp',
             cbu: data.cbu || '',
           });
         }
@@ -688,7 +688,7 @@ function ConfigPanel({ empresaSlug }: { empresaSlug: string }) {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#A12C25] to-[#D9381E] text-white font-black px-6 py-3 rounded-xl shadow-lg hover:brightness-110 transition-all active:scale-95 disabled:opacity-70 focus-ring"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#1A5B6B] to-[#2C8A9E] text-white font-black px-6 py-3 rounded-xl shadow-lg hover:brightness-110 transition-all active:scale-95 disabled:opacity-70 focus-ring"
           >
             {saving ? (
               <><svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" /></svg> Guardando...</>
@@ -713,7 +713,7 @@ function Field({ label, value, onChange, placeholder, icon }: {
       <input
         type="text" value={value} onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full bg-stone-50 border border-stone-200 text-stone-800 rounded-xl p-3 text-sm outline-none focus:bg-white focus:border-[#A12C25] focus:ring-2 focus:ring-[#A12C25]/15 transition-all"
+        className="w-full bg-stone-50 border border-stone-200 text-stone-800 rounded-xl p-3 text-sm outline-none focus:bg-white focus:border-[#1A5B6B] focus:ring-2 focus:ring-[#1A5B6B]/15 transition-all"
       />
     </div>
   );

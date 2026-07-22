@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { getEmpresaId } from '../../lib/getEmpresa';
 import { useToast } from '../../hooks/useToast';
-import { filterMrCerdoBanners } from '../../lib/defaultCatalog';
+// No se necesita filtro adicional — Alcione es el único tenant
 import { Trash2, Plus, Edit2 } from 'lucide-react';
 
 interface Banner {
@@ -37,9 +37,9 @@ export default function BannerManager({ empresaSlug }: { empresaSlug: string }) 
     
     if (error && error.message.includes('sort_order')) {
       const fallback = await supabase.from('banners').select('*').eq('empresa_id', id).order('created_at');
-      setBanners(filterMrCerdoBanners(fallback.data || []));
+      setBanners((arr => arr)(fallback.data || []));
     } else if (data) {
-      setBanners(filterMrCerdoBanners(data));
+      setBanners((arr => arr)(data));
     }
   };
 

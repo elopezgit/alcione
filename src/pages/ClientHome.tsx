@@ -8,12 +8,8 @@ import ProductModal from '../components/client/ProductModal';
 import OrderTrackerModal from '../components/client/OrderTrackerModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getEmpresaData } from '../lib/getEmpresa';
-import { 
-  DEFAULT_CATEGORY_CHORIZOS, 
-  DEFAULT_CHORIZO_PRODUCTS, 
-  filterMrCerdoCategories, 
-  filterMrCerdoProducts 
-} from '../lib/defaultCatalog';
+import { getTenantConfig } from '../lib/tenantConfig';
+import { useTenantTheme } from '../lib/useTenantTheme';
 import { ProductCardSkeleton } from '../components/ui/Skeleton';
 import ErrorRetry from '../components/ui/ErrorRetry';
 import Badge from '../components/ui/Badge';
@@ -54,40 +50,22 @@ interface Banner {
   subtitle?: string;
 }
 
-/* ─── Constants ─── */
-const CATEGORY_COLORS: Record<string, { from: string; to: string; shadow: string }> = {
-  'Ahumados & Parrilla': { from: '#8E201B', to: '#A82B24', shadow: 'rgba(161,44,37,0.25)' },
-  'Curados en Sal': { from: '#9A3412', to: '#C2410C', shadow: 'rgba(194,65,12,0.25)' },
-  'Chorizos': { from: '#8E201B', to: '#A82B24', shadow: 'rgba(161,44,37,0.25)' },
-  'Salames': { from: '#9A3412', to: '#C2410C', shadow: 'rgba(194,65,12,0.25)' },
-  'Bondiolas': { from: '#7C2D12', to: '#9A3412', shadow: 'rgba(180,83,9,0.25)' },
-  'Matambres': { from: '#451A03', to: '#78350F', shadow: 'rgba(120,53,15,0.25)' },
-};
-
-const CATEGORY_KEYWORDS_MAP: Record<string, string[]> = {
-  'Ahumados & Parrilla': ['Choris', 'Matambre', 'Medallones', 'Vacío', 'Costillas', 'Ahumado'],
-  'Curados en Sal': ['Bondiola', 'Jamón', 'Salame de Campo', 'Longaniza', 'Curado en Sal'],
-  'Chorizos': ['Criollo', 'Queso', 'Picante', 'Ahumado', 'Roquefort', 'Miel'],
-  'Salames': ['Colonia', 'Picado Grueso', 'Ahumado', 'Pimienta'],
-  'Bondiolas': ['Curada', 'Ahumada', 'Hierbas'],
-  'Matambres': ['Arrollado', 'Tomillo', 'Hierbas', 'Picante'],
-  'todas': ['Choris', 'Matambre', 'Medallones', 'Vacío', 'Costillas', 'Bondiola', 'Jamón', 'Longaniza', 'Criollo', 'Queso', 'Ahumado', 'Picante', 'Miel'],
-};
-
-const FALLBACK_BANNERS: Banner[] = [
-  { id: '1', image_url: '/img/Catalogo/bondiola.png', title: 'EMBUTIDOS 100% ARTESANALES', subtitle: 'Pura Carne Seleccionada de Cerdo' },
-  { id: '2', image_url: '/img/Catalogo/salame.png', title: 'CURADOS & AHUMADOS GOURMET', subtitle: 'Salames de Colonia & Bondiolas Premium' },
-  { id: '3', image_url: '/img/Catalogo/matambre.png', title: 'CHORIZOS RELLENOS ESPECIALES', subtitle: 'Roquefort, Cheddar, Jalapeño y Más' },
-];
-
 export default function ClientHome() {
   const { empresaSlug } = useParams<{ empresaSlug?: string }>();
-  const activeSlug = empresaSlug || 'mrcerdo';
+  const activeSlug = empresaSlug || 'alcione';
+
+  /* ─── Tenant Config ─── */
+  const config = getTenantConfig(activeSlug);
+  const primaryColor = config.primaryColor;
+  const bgColor = config.colors.background;
+
+  // Aplica el tema dinámico (fuentes, colores CSS, favicon, title)
+  useTenantTheme(config);
 
   /* ─── Data State ─── */
   const [empresa, setEmpresa] = useState<Empresa | null>(null);
-  const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORY_CHORIZOS);
-  const [products, setProducts] = useState<Product[]>(DEFAULT_CHORIZO_PRODUCTS as unknown as Product[]);
+  const [categories, setCategories] = useState<Category[]>(config.defaultCategories as unknown as Category[]);
+  const [products, setProducts] = useState<Product[]>(config.defaultProducts as unknown as Product[]);
   const [banners, setBanners] = useState<Banner[]>([]);
 
   /* ─── UI State ─── */
@@ -107,7 +85,7 @@ export default function ClientHome() {
   const { items, setIsCartOpen, addToCart, removeFromCart, updateQuantity, clearCart, itemCount } = useCart();
 
   /* ─── Derived constants ─── */
-  const displayBanners = banners.length > 0 ? banners : FALLBACK_BANNERS;
+  const displayBanners = banners.length > 0 ? banners : config.fallbackBanners;
 
   /* ─── Banner Auto-scroll ─── */
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -181,10 +159,10 @@ export default function ClientHome() {
           supabase.from('banners').select('*').eq('empresa_id', empData.id).eq('is_active', true),
         ]);
 
-        const cleanCategories = filterMrCerdoCategories(cats.data || []);
-        const cleanProducts = filterMrCerdoProducts(prods.data || []);
+        const cleanCategories = config.filterCategories(cats.data || []);
+        const cleanProducts = config.filterProducts(prods.data || []);
 
-        if (cleanCategories.length > 0) setCategories(cleanCategories);
+        if (cleanCategories.length > 0) setCategories(cleanCategories as unknown as Category[]);
         if (cleanProducts.length > 0) setProducts(cleanProducts as unknown as Product[]);
         if (bans.data && bans.data.length > 0) {
           setBanners(bans.data.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0)));
@@ -196,6 +174,7 @@ export default function ClientHome() {
       setLoading(false);
       setTimeout(() => setShowSplash(false), 2600);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSlug]);
 
   useEffect(() => { loadData(); }, [loadData]);
@@ -205,7 +184,7 @@ export default function ClientHome() {
     ? 'todas'
     : categories.find(c => c.id === activeCategory)?.name || 'todas';
 
-  const availableKeywords = CATEGORY_KEYWORDS_MAP[activeCategoryName] || CATEGORY_KEYWORDS_MAP['todas'];
+  const availableKeywords = config.categoryKeywordsMap[activeCategoryName] || config.categoryKeywordsMap['todas'];
 
   const filteredProducts = products.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -218,7 +197,7 @@ export default function ClientHome() {
   });
 
   const getCategoryStyle = (catName: string) => {
-    return CATEGORY_COLORS[catName] || { from: '#8E201B', to: '#A82B24', shadow: 'rgba(161,44,37,0.25)' };
+    return config.categoryColors[catName] || { from: primaryColor, to: primaryColor, shadow: `${primaryColor}40` };
   };
 
   const getProductQuantity = (productId: string) => {
@@ -246,20 +225,25 @@ export default function ClientHome() {
           exit={{ opacity: 0, scale: 1.03 }}
           transition={{ duration: 0.5, ease: 'easeInOut' }}
           onClick={() => setShowSplash(false)}
-          className="min-h-screen bg-[#FAF8F5] flex flex-col items-center justify-center relative overflow-hidden cursor-pointer select-none"
+          className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden cursor-pointer select-none"
+          style={{ backgroundColor: bgColor }}
         >
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(161,44,37,0.08)_0%,_rgba(250,248,245,1)_70%)] pointer-events-none" />
+          <div 
+            className="absolute inset-0 pointer-events-none"
+            style={{ background: `radial-gradient(ellipse at center, ${primaryColor}14 0%, ${bgColor} 70%)` }}
+          />
           
           <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 max-w-lg mx-auto">
             <motion.div
               initial={{ opacity: 0, y: -15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 bg-[#A12C25]/10 border border-[#A12C25]/30 px-4 py-1.5 rounded-full mb-6 shadow-sm"
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6 shadow-sm"
+              style={{ backgroundColor: `${primaryColor}1A`, borderColor: `${primaryColor}50`, borderWidth: 1 }}
             >
-              <span className="w-2 h-2 rounded-full bg-[#A12C25] animate-ping" aria-hidden="true" />
-              <span className="text-[11px] font-black uppercase tracking-widest text-[#A12C25]">
-                CHARCUTERÍA & EMBUTIDOS ARTESANALES
+              <span className="w-2 h-2 rounded-full animate-ping" style={{ backgroundColor: primaryColor }} aria-hidden="true" />
+              <span className="text-[11px] font-black uppercase tracking-widest" style={{ color: primaryColor }}>
+                {config.splash.badge}
               </span>
             </motion.div>
 
@@ -269,10 +253,13 @@ export default function ClientHome() {
               transition={{ duration: 0.6, type: "spring", bounce: 0.3 }}
               className="relative mb-6"
             >
-              <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-full border-4 border-[#A12C25] shadow-xl overflow-hidden bg-white flex items-center justify-center relative z-10">
+              <div 
+                className="w-40 h-40 sm:w-48 sm:h-48 rounded-full shadow-xl overflow-hidden bg-white flex items-center justify-center relative z-10"
+                style={{ borderWidth: 4, borderColor: primaryColor }}
+              >
                 <img 
-                  src="/img/logo/logoMrCerdo.jpg" 
-                  alt="Mr Cerdo - Charcutería Artesanal" 
+                  src={config.logo}
+                  alt={`${config.name} - ${config.tagline}`} 
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -284,10 +271,10 @@ export default function ClientHome() {
               transition={{ delay: 0.2, duration: 0.5 }}
             >
               <h1 className="text-3xl sm:text-4xl font-black text-stone-900 uppercase tracking-tight font-display drop-shadow-sm">
-                MR CERDO
+                {config.name}
               </h1>
-              <p className="text-xs sm:text-sm font-extrabold text-[#A12C25] uppercase tracking-widest mt-2">
-                CARNES SELECCIONADAS &bull; CALIDAD GOURMET PREMIUM
+              <p className="text-xs sm:text-sm font-extrabold uppercase tracking-widest mt-2" style={{ color: primaryColor }}>
+                {config.tagline}
               </p>
             </motion.div>
 
@@ -297,15 +284,11 @@ export default function ClientHome() {
               transition={{ delay: 0.4, duration: 0.5 }}
               className="flex flex-wrap items-center justify-center gap-2 mt-6"
             >
-              <span className="bg-white border border-stone-200 text-stone-700 text-[10px] font-bold px-3 py-1.5 rounded-xl uppercase shadow-sm">
-                Chorizos Artesanales
-              </span>
-              <span className="bg-white border border-stone-200 text-stone-700 text-[10px] font-bold px-3 py-1.5 rounded-xl uppercase shadow-sm">
-                Salames & Bondiolas
-              </span>
-              <span className="bg-white border border-stone-200 text-stone-700 text-[10px] font-bold px-3 py-1.5 rounded-xl uppercase shadow-sm">
-                Matambres Gourmet
-              </span>
+              {config.splash.tags.map((tag, i) => (
+                <span key={i} className="bg-white border border-stone-200 text-stone-700 text-[10px] font-bold px-3 py-1.5 rounded-xl uppercase shadow-sm">
+                  {tag}
+                </span>
+              ))}
             </motion.div>
 
             <motion.div
@@ -314,11 +297,14 @@ export default function ClientHome() {
               transition={{ delay: 0.6, duration: 0.5, type: "spring" }}
               className="mt-8 flex flex-col items-center gap-2"
             >
-              <span className="bg-gradient-to-r from-[#A12C25] to-[#D9381E] text-white font-black text-base uppercase tracking-wider px-8 py-3.5 rounded-2xl shadow-lg shadow-[#A12C25]/25 active:scale-95 transition-transform">
-                ENTRAR AL CATÁLOGO
+              <span 
+                className="text-white font-black text-base uppercase tracking-wider px-8 py-3.5 rounded-2xl active:scale-95 transition-transform"
+                style={{ background: `linear-gradient(to right, ${primaryColor}, ${config.colors['primary-light']})`, boxShadow: `0 10px 25px -5px ${primaryColor}40` }}
+              >
+                {config.splash.ctaText}
               </span>
               <span className="text-[11px] text-stone-500 font-medium">
-                Toca en cualquier lugar para ingresar
+                {config.splash.footerText}
               </span>
             </motion.div>
           </div>
@@ -339,7 +325,7 @@ export default function ClientHome() {
   /* ─── Loading Skeleton ─── */
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FAF8F5] pb-28">
+      <div className="min-h-screen pb-28" style={{ backgroundColor: bgColor }}>
         <header className="bg-white/95 pt-6 pb-5 px-4 border-b border-stone-200">
           <div className="max-w-6xl mx-auto">
             <div className="flex items-center gap-3.5 mb-4">
@@ -372,26 +358,29 @@ export default function ClientHome() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] pb-28 font-sans text-stone-800">
+    <div className="min-h-screen pb-28 font-sans text-stone-800" style={{ backgroundColor: bgColor }}>
       {/* ═══════ HEADER ═══════ */}
       <header className="bg-white/95 pt-6 pb-5 px-4 sticky top-0 z-40 border-b border-stone-200 backdrop-blur-xl shadow-sm">
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-3.5">
-               <div className="w-13 h-13 bg-white rounded-2xl border-2 border-[#A12C25] flex items-center justify-center shadow-sm overflow-hidden shrink-0 transition-transform hover:scale-105">
-                  <img src="/img/logo/logoMrCerdo.jpg" alt="Mr Cerdo Logo" className="w-full h-full object-cover" />
+               <div 
+                 className="w-13 h-13 bg-white rounded-2xl border-2 flex items-center justify-center shadow-sm overflow-hidden shrink-0 transition-transform hover:scale-105"
+                 style={{ borderColor: primaryColor }}
+               >
+                  <img src={config.logo} alt={`${config.name} Logo`} className="w-full h-full object-cover" />
                </div>
                <div>
                  <h1 className="text-xl md:text-2xl font-black tracking-tight text-stone-900 font-display uppercase">
-                   MR CERDO
+                   {config.name}
                  </h1>
                  <div className="flex items-center gap-2 text-xs font-semibold text-stone-600 mt-0.5">
-                   <span className="flex items-center gap-1 font-extrabold text-[#A12C25] uppercase tracking-wider">
-                     Embutidos Gourmet
+                   <span className="flex items-center gap-1 font-extrabold uppercase tracking-wider" style={{ color: primaryColor }}>
+                     {config.tagline}
                    </span>
                    <span className="text-stone-300">&bull;</span>
                    <span className="flex items-center gap-1 text-stone-500">
-                     <MapPin size={11} className="text-[#A12C25]" aria-hidden="true" /> Envíos a todo el país
+                     <MapPin size={11} style={{ color: primaryColor }} aria-hidden="true" /> {config.contact.address || 'Envíos a todo el país'}
                    </span>
                  </div>
                </div>
@@ -399,7 +388,7 @@ export default function ClientHome() {
             
             <div className="flex items-center gap-2.5">
               <a 
-                href={`https://wa.me/5493814751620?text=${encodeURIComponent('¡Hola Mr Cerdo! Quisiera hacer un pedido de embutidos artesanales.')}`}
+                href={`https://wa.me/${config.contact.whatsapp}?text=${encodeURIComponent(config.contact.whatsappMessage || '')}`}
                 target="_blank" 
                 rel="noreferrer"
                 aria-label="Consultar por WhatsApp"
@@ -412,14 +401,17 @@ export default function ClientHome() {
 
           {/* Search Bar */}
           <div className="relative group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-[#A12C25] transition-colors" size={18} aria-hidden="true" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 transition-colors group-focus-within:opacity-100" size={18} aria-hidden="true" style={{ color: 'var(--color-primary, #A12C25)' }} />
             <input 
               type="text" 
-              placeholder="Buscar chorizos, salames, bondiolas, roquefort..." 
+              placeholder={config.searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               aria-label="Buscar productos"
-              className="w-full bg-stone-100 border border-stone-200 text-stone-900 rounded-2xl py-3.5 pl-12 pr-4 shadow-inner outline-none focus:bg-white focus:border-[#A12C25] focus:ring-2 focus:ring-[#A12C25]/15 transition-all text-sm placeholder:text-stone-400"
+              className="w-full bg-stone-100 border border-stone-200 text-stone-900 rounded-2xl py-3.5 pl-12 pr-4 shadow-inner outline-none focus:bg-white transition-all text-sm placeholder:text-stone-400"
+              style={{ borderColor: 'var(--color-primary, #A12C25)', '--tw-ring-color': `${primaryColor}26` } as React.CSSProperties}
+              onFocus={(e) => { e.currentTarget.style.borderColor = primaryColor; e.currentTarget.style.boxShadow = `0 0 0 3px ${primaryColor}26`; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = ''; e.currentTarget.style.boxShadow = ''; }}
             />
           </div>
 
@@ -454,7 +446,7 @@ export default function ClientHome() {
               className="w-full bg-white border border-stone-200 p-4 rounded-2xl flex items-center justify-between shadow-sm hover:shadow-md transition-all focus-ring"
             >
               <div className="flex items-center gap-3 text-left">
-                <div className="bg-[#A12C25]/10 p-2.5 rounded-full text-[#A12C25]">
+                <div className="p-2.5 rounded-full" style={{ backgroundColor: `${primaryColor}1A`, color: primaryColor }}>
                   <RotateCcw size={20} aria-hidden="true" />
                 </div>
                 <div>
@@ -486,15 +478,18 @@ export default function ClientHome() {
                 >
                   <img 
                     src={banner.image_url} 
-                    alt={banner.title || "Promoción Mr Cerdo"} 
+                    alt={banner.title || `Promoción ${config.name}`} 
                     className="w-full h-full object-cover opacity-75 group-hover/banner:scale-105 transition-transform duration-500" 
                     loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-stone-950/90 via-stone-950/35 to-transparent"></div>
                   
                   <div className="absolute bottom-4 left-4 right-4 text-left">
-                    <span className="inline-block bg-[#A12C25] text-white font-extrabold text-[10px] px-2.5 py-0.5 rounded-md uppercase tracking-widest mb-1.5 shadow-sm">
-                      MR CERDO
+                    <span 
+                      className="inline-block text-white font-extrabold text-[10px] px-2.5 py-0.5 rounded-md uppercase tracking-widest mb-1.5 shadow-sm"
+                      style={{ backgroundColor: primaryColor }}
+                    >
+                      {config.name}
                     </span>
                     {banner.title && (
                       <h3 className="text-white font-black text-lg leading-tight uppercase tracking-tight drop-shadow-sm">
@@ -527,10 +522,9 @@ export default function ClientHome() {
                     aria-selected={idx === bannerIndex}
                     aria-label={`Banner ${idx + 1} de ${displayBanners.length}`}
                     className={`w-2 h-2 rounded-full transition-all duration-300 focus-ring ${
-                      idx === bannerIndex
-                        ? 'bg-[#A12C25] w-5'
-                        : 'bg-stone-300 hover:bg-stone-400'
+                      idx === bannerIndex ? 'w-5' : 'bg-stone-300 hover:bg-stone-400'
                     }`}
+                    style={idx === bannerIndex ? { backgroundColor: primaryColor } : undefined}
                   />
                 ))}
               </div>
@@ -542,7 +536,7 @@ export default function ClientHome() {
         {!searchQuery && (
           <section className="px-4 mb-6">
             <h2 className="text-base font-black text-stone-900 mb-3 tracking-tight uppercase flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#A12C25]" aria-hidden="true"></span>
+              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: primaryColor }} aria-hidden="true"></span>
               Categorías Oficiales
             </h2>
             
@@ -555,8 +549,14 @@ export default function ClientHome() {
                 aria-label="Seleccionar todas las categorías"
                 className="snap-start shrink-0 focus-ring rounded-2xl"
               >
-                <div className={`w-20 h-28 rounded-2xl flex flex-col items-center justify-center gap-1.5 transition-all duration-200 border ${activeCategory === 'todas' ? 'bg-gradient-to-br from-[#A12C25] to-[#D9381E] text-white border-[#A12C25] shadow-md scale-105' : 'bg-white border-stone-200 text-stone-700 hover:border-[#A12C25] shadow-sm'}`}>
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${activeCategory === 'todas' ? 'bg-black/20 text-white' : 'bg-stone-100 text-[#A12C25]'}`}>
+                <div 
+                  className={`w-20 h-28 rounded-2xl flex flex-col items-center justify-center gap-1.5 transition-all duration-200 border ${activeCategory === 'todas' ? 'text-white shadow-md scale-105' : 'bg-white border-stone-200 text-stone-700 hover:border-primary shadow-sm'}`}
+                  style={activeCategory === 'todas' ? { background: `linear-gradient(135deg, ${primaryColor}, ${config.colors['primary-light']})`, borderColor: primaryColor } : {}}
+                >
+                  <div 
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center ${activeCategory === 'todas' ? 'bg-black/20 text-white' : 'bg-stone-100'}`}
+                    style={activeCategory !== 'todas' ? { color: primaryColor } : {}}
+                  >
                     <Star size={20} aria-hidden="true" />
                   </div>
                   <span className="text-[11px] font-extrabold uppercase tracking-wider">Todas</span>
@@ -579,8 +579,11 @@ export default function ClientHome() {
                     className="snap-start shrink-0 focus-ring rounded-2xl"
                   >
                     <div
-                      className={`w-36 h-28 rounded-2xl p-4 flex flex-col justify-between relative overflow-hidden transition-all duration-200 border ${isActive ? 'ring-2 ring-[#A12C25] ring-offset-2 ring-offset-[#FAF8F5] shadow-md scale-[1.03]' : 'border-stone-200/80 shadow-sm hover:shadow-md'}`}
-                      style={{ background: `linear-gradient(135deg, ${colors.from}, ${colors.to})` }}
+                      className={`w-36 h-28 rounded-2xl p-4 flex flex-col justify-between relative overflow-hidden transition-all duration-200 border ${isActive ? 'ring-2 ring-offset-2 shadow-md scale-[1.03]' : 'border-stone-200/80 shadow-sm hover:shadow-md'}`}
+                      style={{ 
+                        background: `linear-gradient(135deg, ${colors.from}, ${colors.to})`,
+                        ...(isActive ? { boxShadow: `0 0 0 2px ${primaryColor}`, '--tw-ring-offset-width': '2px' } as React.CSSProperties : {})
+                      }}
                     >
                       <div className="absolute -right-4 -top-4 text-6xl opacity-20 select-none" aria-hidden="true">
                         {cat.icon}
@@ -613,7 +616,8 @@ export default function ClientHome() {
               {selectedKeyword !== 'todas' && (
                 <button 
                   onClick={() => setSelectedKeyword('todas')}
-                  className="text-[11px] font-bold text-[#A12C25] hover:underline focus-ring"
+                  className="text-[11px] font-bold hover:underline focus-ring"
+                  style={{ color: primaryColor }}
                 >
                   Limpiar filtro
                 </button>
@@ -625,22 +629,24 @@ export default function ClientHome() {
                 aria-label="Mostrar todos los productos"
                 className={`shrink-0 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all border focus-ring ${
                   selectedKeyword === 'todas'
-                    ? 'bg-[#A12C25] text-white border-[#A12C25] shadow-sm'
-                    : 'bg-white text-stone-600 border-stone-200 hover:border-[#A12C25] hover:text-[#A12C25] shadow-sm'
+                    ? 'text-white shadow-sm'
+                    : 'bg-white text-stone-600 border-stone-200 hover:border-primary hover:text-primary shadow-sm'
                 }`}
+                style={selectedKeyword === 'todas' ? { backgroundColor: primaryColor, borderColor: primaryColor } : {}}
               >
                 # Todos
               </button>
-              {availableKeywords.map(kw => (
+              {availableKeywords && availableKeywords.map(kw => (
                 <button
                   key={kw}
                   onClick={() => setSelectedKeyword(selectedKeyword === kw ? 'todas' : kw)}
                   aria-label={`Filtrar por ${kw}`}
                   className={`shrink-0 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all border focus-ring ${
                     selectedKeyword === kw
-                      ? 'bg-[#A12C25] text-white border-[#A12C25] shadow-sm scale-105'
-                      : 'bg-white text-stone-700 border-stone-200 hover:border-[#A12C25] hover:text-[#A12C25] shadow-sm'
+                      ? 'text-white shadow-sm scale-105'
+                      : 'bg-white text-stone-700 border-stone-200 hover:border-primary hover:text-primary shadow-sm'
                   }`}
+                  style={selectedKeyword === kw ? { backgroundColor: primaryColor, borderColor: primaryColor } : {}}
                 >
                   #{kw}
                 </button>
@@ -673,21 +679,29 @@ export default function ClientHome() {
                         transition={{ delay: idx * 0.03 }}
                         key={product.id} 
                         onClick={() => setSelectedProduct(product)}
-                        className="bg-white rounded-2xl border border-stone-200/90 hover:border-[#A12C25]/40 p-3.5 flex gap-4 relative cursor-pointer active:scale-[0.99] transition-all duration-200 shadow-sm hover:shadow-md group focus-ring"
+                        className="bg-white rounded-2xl border border-stone-200/90 hover:border-primary/40 p-3.5 flex gap-4 relative cursor-pointer active:scale-[0.99] transition-all duration-200 shadow-sm hover:shadow-md group focus-ring"
                         role="button"
                         tabIndex={0}
                         aria-label={`${product.name} - $${product.price.toLocaleString('es-AR')}`}
                         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedProduct(product); }}
+                        style={{ '--hover-border': `${primaryColor}66` } as React.CSSProperties}
+                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = `${primaryColor}66`; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = ''; }}
                       >
                         <div className="flex-1 flex flex-col justify-between">
                           <div>
-                            <h3 className="font-bold text-stone-900 group-hover:text-[#A12C25] text-[15px] leading-tight mb-1 pr-2 transition-colors">{product.name}</h3>
+                            <h3 
+                              className="font-bold text-stone-900 text-[15px] leading-tight mb-1 pr-2 transition-colors"
+                              onMouseEnter={(e) => { e.currentTarget.style.color = primaryColor; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.color = ''; }}
+                            >
+                              {product.name}
+                            </h3>
                             <p className="text-xs text-stone-500 line-clamp-2 mb-2 leading-relaxed">{product.description}</p>
                           </div>
                           
                           <div className="flex items-center gap-3 mt-1">
                             <span className="font-black text-stone-900 text-lg tracking-tight">${product.price.toLocaleString('es-AR')}</span>
-                            {/* Quantity badge in cart */}
                             {qty > 0 && (
                               <Badge variant="primary" size="sm">
                                 {qty} en pedido
@@ -695,7 +709,6 @@ export default function ClientHome() {
                             )}
                           </div>
 
-                          {/* Quantity selector on card (when qty > 0) */}
                           {qty > 0 && (
                             <div className="flex items-center gap-1 mt-2">
                               <button
@@ -721,7 +734,10 @@ export default function ClientHome() {
                                   addToCart(product, 1);
                                 }}
                                 aria-label={`Aumentar cantidad de ${product.name}`}
-                                className="w-7 h-7 flex items-center justify-center bg-[#A12C25] hover:bg-[#8B231E] rounded-lg text-white transition-colors"
+                                className="w-7 h-7 flex items-center justify-center rounded-lg text-white transition-colors"
+                                style={{ backgroundColor: primaryColor }}
+                                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = config.colors['primary-hover']; }}
+                                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = primaryColor; }}
                               >
                                 <Plus size={12} aria-hidden="true" />
                               </button>
@@ -729,23 +745,28 @@ export default function ClientHome() {
                           )}
                         </div>
 
-                        <div className="w-28 h-28 sm:w-32 sm:h-32 shrink-0 bg-stone-100 rounded-xl relative overflow-hidden shadow-inner border border-stone-200 group-hover:border-[#A12C25]/30 transition-all flex flex-col justify-between p-2">
+                        <div className="w-28 h-28 sm:w-32 sm:h-32 shrink-0 bg-stone-100 rounded-xl relative overflow-hidden shadow-inner border border-stone-200 group-hover/border-primary/30 transition-all flex flex-col justify-between p-2"
+                          onMouseEnter={(e) => { e.currentTarget.style.borderColor = `${primaryColor}50`; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.borderColor = ''; }}
+                        >
                           <div className="z-10 flex justify-between items-center w-full">
                             <span className="text-sm select-none">{category.icon}</span>
-                            <span className="bg-white/95 text-[#A12C25] font-black text-[9px] px-1.5 py-0.5 rounded border border-stone-200 tracking-wider uppercase shadow-sm">
-                              GOURMET
+                            <span 
+                              className="bg-white/95 font-black text-[9px] px-1.5 py-0.5 rounded border border-stone-200 tracking-wider uppercase shadow-sm"
+                              style={{ color: primaryColor }}
+                            >
+                              DECO
                             </span>
                           </div>
 
                           <img 
-                            src={product.image_url || '/img/Catalogo/bondiola.png'} 
+                            src={product.image_url || config.fallbackBanners[0]?.image_url || ''} 
                             alt={product.name}
                             className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500"
                             loading="lazy"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-stone-900/65 via-transparent to-stone-900/10 pointer-events-none" />
 
-                          {/* Plus button only when not in cart (otherwise quantity selector is shown) */}
                           {qty === 0 && (
                             <button 
                               onClick={(e) => {
@@ -753,7 +774,8 @@ export default function ClientHome() {
                                 addToCart(product, 1);
                               }}
                               aria-label={`Agregar ${product.name} al carrito`}
-                              className="absolute bottom-1.5 right-1.5 z-20 w-8 h-8 flex items-center justify-center bg-gradient-to-r from-[#A12C25] to-[#D9381E] rounded-lg text-white shadow-md shadow-[#A12C25]/30 active:scale-90 hover:brightness-110 transition-all"
+                              className="absolute bottom-1.5 right-1.5 z-20 w-8 h-8 flex items-center justify-center rounded-lg text-white shadow-md active:scale-90 hover:brightness-110 transition-all"
+                              style={{ background: `linear-gradient(to right, ${primaryColor}, ${config.colors['primary-light']})`, boxShadow: `0 4px 6px -1px ${primaryColor}50` }}
                             >
                               <Plus size={16} strokeWidth={3} aria-hidden="true" />
                             </button>
@@ -774,7 +796,8 @@ export default function ClientHome() {
               <p className="text-stone-500 text-sm">Prueba buscando con otras palabras o seleccionando otra categoría.</p>
               <button
                 onClick={() => { setSearchQuery(''); setActiveCategory('todas'); setSelectedKeyword('todas'); }}
-                className="mt-4 text-sm font-bold text-[#A12C25] hover:underline focus-ring"
+                className="mt-4 text-sm font-bold hover:underline focus-ring"
+                style={{ color: primaryColor }}
               >
                 Ver todos los productos
               </button>
@@ -795,7 +818,8 @@ export default function ClientHome() {
             <button 
               onClick={() => setIsCartOpen(true)}
               aria-label={`Abrir carrito con ${itemCount} productos`}
-              className="w-full bg-gradient-to-r from-[#A12C25] to-[#D9381E] text-white p-4 rounded-2xl shadow-xl shadow-[#A12C25]/35 flex items-center justify-between transition-all hover:brightness-110 active:scale-95 border border-white/20 focus-ring"
+              className="w-full text-white p-4 rounded-2xl shadow-xl flex items-center justify-between transition-all hover:brightness-110 active:scale-95 border border-white/20 focus-ring"
+              style={{ background: `linear-gradient(to right, ${primaryColor}, ${config.colors['primary-light']})`, boxShadow: `0 20px 25px -5px ${primaryColor}60` }}
             >
               <div className="flex items-center gap-3">
                 <div className="bg-black/25 text-white w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg border border-white/20 shadow-inner">
@@ -821,6 +845,9 @@ export default function ClientHome() {
         isOpen={!!selectedProduct} 
         onClose={() => setSelectedProduct(null)}
         onAddToCart={(prod, qty, notes) => addToCart(prod, qty, notes)}
+        tenantName={config.name}
+        tenantPrimaryColor={primaryColor}
+        tenantTagline={config.tagline}
       />
 
       <CartModal 

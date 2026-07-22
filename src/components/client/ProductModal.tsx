@@ -17,9 +17,20 @@ interface ProductModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddToCart: (product: Product, quantity: number, notes: string) => void;
+  tenantName?: string;
+  tenantPrimaryColor?: string;
+  tenantTagline?: string;
 }
 
-export default function ProductModal({ product, isOpen, onClose, onAddToCart }: ProductModalProps) {
+export default function ProductModal({ 
+  product, 
+  isOpen, 
+  onClose, 
+  onAddToCart,
+  tenantName = 'ALCIONE',
+  tenantPrimaryColor = '#1A5B6B',
+  tenantTagline = ''
+}: ProductModalProps) {
   const [quantity, setQuantity] = useState(1);
   const [notes, setNotes] = useState('');
 
@@ -39,11 +50,15 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
 
   const getPlaceholder = (name: string) => {
     const n = name.toLowerCase();
-    if (n.includes('chorizo')) return 'Ej: Bien sellado al vacío, listo para parrilla...';
-    if (n.includes('salame')) return 'Ej: Enviar entero o cortado en rodajas...';
-    if (n.includes('bondiola')) return 'Ej: Aclarar preferencia de pieza...';
+    if (n.includes('plato') || n.includes('vaso') || n.includes('copa')) return 'Ej: Juego completo, embalaje para regalo...';
+    if (n.includes('cortina')) return 'Ej: Medidas personalizadas, color alternativo...';
+    if (n.includes('lámpara') || n.includes('lampara')) return 'Ej: Tipo de luz cálida/fría, voltaje...';
+    if (n.includes('acolchado') || n.includes('colcha')) return 'Ej: Medida exacta, color preferido...';
+    if (n.includes('cuadro') || n.includes('lámina') || n.includes('lamina')) return 'Ej: Orientación horizontal/vertical, marco...';
     return 'Ej: Aclaraciones especiales para tu pedido...';
   };
+
+  const primaryColor = tenantPrimaryColor;
 
   return (
     <AnimatePresence>
@@ -77,18 +92,21 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
               <div className="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/20 to-transparent"></div>
               
               <div className="absolute bottom-4 left-6 z-10 flex flex-col items-start gap-1">
-                <Badge variant="primary" size="sm">
-                  MR CERDO &bull; OFICIAL
+                <Badge variant="primary" size="sm" style={{ backgroundColor: primaryColor }}>
+                  {tenantName} &bull; OFICIAL
                 </Badge>
                 <div className="text-xs font-bold text-amber-300 uppercase tracking-wider drop-shadow-md mt-0.5">
-                  ★ 100% PURO CERDO SELECCIONADO
+                  {tenantTagline || '⭐ PRODUCTO SELECCIONADO'}
                 </div>
               </div>
 
               <button 
                 onClick={onClose}
                 aria-label="Cerrar detalle del producto"
-                className="absolute top-4 right-4 p-2.5 bg-white/90 text-stone-900 rounded-full border border-stone-200 shadow-md hover:bg-[#A12C25] hover:text-white transition-colors z-20 focus-ring"
+                className="absolute top-4 right-4 p-2.5 bg-white/90 text-stone-900 rounded-full border border-stone-200 shadow-md hover:bg-primary hover:text-white transition-colors z-20 focus-ring"
+                style={{ '--hover-bg': primaryColor } as React.CSSProperties}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = primaryColor; e.currentTarget.style.color = 'white'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = ''; e.currentTarget.style.color = ''; }}
               >
                 <X size={20} aria-hidden="true" />
               </button>
@@ -99,16 +117,16 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
                 {product.name}
               </h2>
               <div className="flex items-center gap-2 mb-4">
-                <span className="font-black text-2xl text-[#A12C25]">
+                <span className="font-black text-2xl" style={{ color: primaryColor }}>
                   ${product.price.toLocaleString('es-AR')}
                 </span>
               </div>
               <p className="text-stone-600 leading-relaxed mb-6 text-sm">
-                {product.description || 'Charcutería y embutidos artesanales elaborados con pura carne de cerdo de selección.'}
+                {product.description || 'Producto seleccionado de nuestro catálogo.'}
               </p>
 
               <div className="mb-4">
-                <label htmlFor="product-notes" className="block text-xs font-black uppercase tracking-wider text-[#A12C25] mb-2">
+                <label htmlFor="product-notes" className="block text-xs font-black uppercase tracking-wider mb-2" style={{ color: primaryColor }}>
                   Instrucciones o preferencias del pedido
                 </label>
                 <textarea 
@@ -117,7 +135,10 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder={getPlaceholder(product.name)}
                   aria-label="Instrucciones para el pedido"
-                  className="w-full bg-stone-50 border border-stone-200 rounded-xl p-3 text-sm text-stone-900 focus:ring-2 focus:ring-[#A12C25]/20 focus:border-[#A12C25] outline-none transition-all resize-none h-20 placeholder:text-stone-400"
+                  className="w-full bg-stone-50 border border-stone-200 rounded-xl p-3 text-sm text-stone-900 outline-none transition-all resize-none h-20 placeholder:text-stone-400"
+                  style={{ '--focus-color': `${primaryColor}33` } as React.CSSProperties}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = primaryColor; e.currentTarget.style.boxShadow = `0 0 0 3px ${primaryColor}33`; }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = ''; e.currentTarget.style.boxShadow = ''; }}
                 />
               </div>
             </div>
@@ -139,7 +160,10 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
                     <button 
                       onClick={() => setQuantity(quantity + 1)}
                       aria-label={`Aumentar cantidad a ${quantity + 1}`}
-                      className="w-10 h-10 flex items-center justify-center bg-[#A12C25] hover:bg-[#8B231E] rounded-xl shadow-sm text-white active:scale-95 transition-all focus-ring"
+                      className="w-10 h-10 flex items-center justify-center rounded-xl shadow-sm text-white active:scale-95 transition-all focus-ring"
+                      style={{ backgroundColor: primaryColor }}
+                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = `${primaryColor}dd`; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = primaryColor; }}
                     >
                       <Plus size={18} aria-hidden="true" />
                     </button>
@@ -153,7 +177,11 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }: 
               <button 
                 onClick={handleAdd}
                 aria-label={`Agregar ${quantity} ${product.name} al pedido`}
-                className="w-full bg-gradient-to-r from-[#A12C25] to-[#C93C32] hover:brightness-110 text-white py-4 rounded-2xl font-black uppercase tracking-wide text-base shadow-lg shadow-[#A12C25]/25 transition-all active:scale-[0.98] focus-ring"
+                className="w-full text-white py-4 rounded-2xl font-black uppercase tracking-wide text-base shadow-lg transition-all active:scale-[0.98] focus-ring"
+                style={{ 
+                  background: `linear-gradient(to right, ${primaryColor}, ${primaryColor}dd)`,
+                  boxShadow: `0 10px 15px -3px ${primaryColor}40`
+                }}
               >
                 Agregar al pedido
               </button>

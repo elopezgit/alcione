@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { getEmpresaId } from '../lib/getEmpresa';
-import { filterMrCerdoCategories, filterMrCerdoProducts } from '../lib/defaultCatalog';
+import { filterAlcioneCategories, filterAlcioneProducts } from '../lib/defaultCatalog';
 import { useCart } from '../lib/CartContext';
 import { useToast } from '../hooks/useToast';
 import { Search, Plus, Minus, Trash2, Wallet, CreditCard, Send, Coffee, Utensils, X, CheckCircle } from 'lucide-react';
@@ -62,10 +62,10 @@ export default function POSHome({ empresaSlug }: { empresaSlug: string }) {
           supabase.from('products').select('*').eq('empresa_id', id).eq('is_active', true),
         ]);
 
-        const loadedCats = filterMrCerdoCategories(cats.data || []);
+        const loadedCats = filterAlcioneCategories(cats.data || []);
         setCategories(loadedCats);
 
-        const loadedProds = filterMrCerdoProducts(prods.data || []);
+        const loadedProds = filterAlcioneProducts(prods.data || []);
         setProducts(loadedProds);
       } catch (err: any) {
         setError(err.message);

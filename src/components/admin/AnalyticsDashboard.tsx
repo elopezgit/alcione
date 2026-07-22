@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { getEmpresaId } from '../../lib/getEmpresa';
-import { filterMrCerdoOrders } from '../../lib/defaultCatalog';
+// No se necesita filtro adicional — Alcione es el único tenant
 import { TrendingUp, TrendingDown, Clock, CheckCircle2, AlertCircle, Users, Calendar, Activity, Receipt, LayoutList, Trophy, ArrowDownToLine, Download } from 'lucide-react';
 
 interface OrderItem {
@@ -94,7 +94,7 @@ export default function AnalyticsDashboard({ empresaSlug }: { empresaSlug: strin
       query = query.gte('created_at', startDate.toISOString()).lte('created_at', endDate.toISOString());
       
       const { data: currentData } = await query;
-      setOrders(filterMrCerdoOrders(currentData || []));
+      setOrders((arr => arr)(currentData || []));
       
       setPrevOrders([]);
       setIsLoading(false);
@@ -107,7 +107,7 @@ export default function AnalyticsDashboard({ empresaSlug }: { empresaSlug: strin
       query = query.gte('created_at', startDate.toISOString());
     }
     const { data: currentData } = await query;
-    setOrders(filterMrCerdoOrders(currentData || []));
+    setOrders((arr => arr)(currentData || []));
 
     // Fetch Previous Period
     if (hasPrevPeriod) {
@@ -116,7 +116,7 @@ export default function AnalyticsDashboard({ empresaSlug }: { empresaSlug: strin
         .eq('empresa_id', eid)
         .gte('created_at', prevStartDate.toISOString())
         .lt('created_at', prevEndDate.toISOString());
-      setPrevOrders(filterMrCerdoOrders(previousData || []));
+      setPrevOrders((arr => arr)(previousData || []));
     } else {
       setPrevOrders([]);
     }

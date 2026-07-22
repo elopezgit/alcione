@@ -24,17 +24,17 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 /* ─── Persistencia en localStorage ─── */
-const STORAGE_KEY = 'mrcerdo_cart';
+const DEFAULT_STORAGE_KEY = 'mrcerdo_cart';
 
-function saveCart(items: CartItem[]) {
+function saveCart(items: CartItem[], key: string) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    localStorage.setItem(key, JSON.stringify(items));
   } catch { /* quota exceeded, silently fail */ }
 }
 
-function loadCart(): CartItem[] {
+function loadCart(key: string): CartItem[] {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = localStorage.getItem(key);
     if (saved) {
       const parsed = JSON.parse(saved);
       if (Array.isArray(parsed)) return parsed;
@@ -43,14 +43,20 @@ function loadCart(): CartItem[] {
   return [];
 }
 
-export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>(() => loadCart());
+interface CartProviderProps {
+  children: ReactNode;
+  storageKey?: string;
+}
+
+export function CartProvider({ children, storageKey }: CartProviderProps) {
+  const key = storageKey || DEFAULT_STORAGE_KEY;
+  const [items, setItems] = useState<CartItem[]>(() => loadCart(key));
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   // Persistir cambios automáticamente
   useEffect(() => {
-    saveCart(items);
-  }, [items]);
+    saveCart(items, key);
+  }, [items, key]);
 
   const addToCart = useCallback((product: { id: string; name: string; price: number }, quantity = 1, notes = '') => {
     setItems(current => {
@@ -98,7 +104,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const clearCart = useCallback(() => {
     setItems([]);
-    try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
+    try { localStorage.removeItem(key); } catch { /* ignore */ }
   }, []);
 
   const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);

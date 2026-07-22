@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { getEmpresaId } from '../../lib/getEmpresa';
 import { useToast } from '../../hooks/useToast';
-import { filterMrCerdoCategories, filterMrCerdoProducts } from '../../lib/defaultCatalog';
+import { filterAlcioneCategories, filterAlcioneProducts } from '../../lib/defaultCatalog';
 import { Trash2, Edit, Plus, Upload } from 'lucide-react';
 
 interface Product {
@@ -52,8 +52,8 @@ export default function CatalogManager({ empresaSlug }: { empresaSlug: string })
       supabase.from('products').select('*').eq('empresa_id', id).order('name')
     ]);
     
-    setCategories(filterMrCerdoCategories(cats.data || []));
-    setProducts(filterMrCerdoProducts(prods.data || []));
+    setCategories(filterAlcioneCategories(cats.data || []));
+    setProducts(filterAlcioneProducts(prods.data || []));
   };
 
   const handleSave = async (e: React.FormEvent) => {

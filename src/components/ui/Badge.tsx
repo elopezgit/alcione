@@ -10,6 +10,7 @@ interface BadgeProps {
   className?: string;
   dot?: boolean;
   pulse?: boolean;
+  style?: React.CSSProperties;
 }
 
 const VARIANT_STYLES: Record<BadgeVariant, string> = {
@@ -33,6 +34,7 @@ export default function Badge({
   className = '',
   dot = false,
   pulse = false,
+  style,
 }: BadgeProps) {
   return (
     <span
@@ -42,6 +44,7 @@ export default function Badge({
         ${SIZE_STYLES[size]}
         ${className}
       `}
+      style={style}
     >
       {dot && (
         <span

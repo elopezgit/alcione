@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { getEmpresaId } from '../../lib/getEmpresa';
-import { filterMrCerdoOrders } from '../../lib/defaultCatalog';
+// No se necesita filtro adicional — Alcione es el único tenant
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Search, X } from 'lucide-react';
 import OrderDetailModal from './OrderDetailModal';
@@ -65,7 +65,7 @@ export default function KanbanBoard({ empresaSlug, role }: { empresaSlug: string
       .select('*')
       .eq('empresa_id', id)
       .order('created_at', { ascending: false });
-    setOrders(filterMrCerdoOrders(data || []));
+    setOrders((arr => arr)(data || []));
   };
 
   const updateOrderStatus = (orderId: string, newStatus: string) => {

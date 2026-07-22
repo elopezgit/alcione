@@ -1,26 +1,28 @@
-# MR CERDO — Embutidos Gourmet Artesanales
+# Alcione — Plataforma Oficial de E-Commerce (Deco & Hogar)
 
-Plataforma oficial de E-Commerce y Punto de Venta (POS) para **MR CERDO**, charcutería artesanal de calidad gourmet.
+Plataforma moderna de E-Commerce y Punto de Venta (POS) para **Alcione**, tienda especializada en artículos de decoración y hogar con estilo elegante, luminoso y contemporáneo.
 
-## Características Principales
+## ✨ Características Principales
 
-- **Menú y Catálogo Gourmet Exclusivo**: 22 productos elaborados 100% con pura carne de cerdo seleccionada (Chorizos, Salames de Colonia, Bondiolas Curadas y Ahumadas, y Matambres Arrollados).
-- **Interfaz Estilo PedidosYa Light**: Navegación ágil, tarjetas claras con alta legibilidad, buscador rápido por palabras clave (#Criollo, #Queso, #Ahumado, #Picante) y carrito flotante interactivo.
-- **Seguimiento en Vivo y Pedidos por WhatsApp**: Integración directa con pedidos vía WhatsApp y seguimiento de estado del pedido en tiempo real.
-- **Punto de Venta (POS) Integrado**: Gestión operativa para mostrador y administración de catálogo.
+- **Catálogo Gourmet de Decoración**: Platos, vasos y copas, cortinas, lámparas, acolchados, espejos, manteles, canastos y cuadros con estética cuidada.
+- **Experiencia de Usuario Premium**: Navegación veloz, búsqueda por palabras clave y categorías, carrito flotante interactivo y modal de detalle completo.
+- **Integración Directa con WhatsApp**: Gestión y seguimiento de pedidos en tiempo real con envío directo por WhatsApp.
+- **Punto de Venta (POS) y Panel de Administración**: Gestión administrativa, tablero Kanban, analíticas y administración integral de productos y banners.
+- **Arquitectura Multitenant Preparada**: Diseño limpio y escalable con personalización visual por tokens dinámicos.
 
-## Tecnologías
+## 🛠️ Tecnologías
 
-- **Frontend**: React 18, TypeScript, Vite, Tailwind CSS v4, Framer Motion, Lucide Icons
-- **Backend / DB**: Supabase (PostgreSQL + Realtime)
+- **Frontend**: React 19, TypeScript 6, Vite 8, Tailwind CSS v4, Framer Motion, Lucide Icons
+- **Backend / DB**: Supabase (PostgreSQL 15 + Auth + REST API)
+- **Despliegue**: Netlify
 
-## Instalación y Desarrollo Local
+## 🚀 Instalación y Desarrollo Local
 
 ```bash
 # Instalar dependencias
 npm install
 
-# Iniciar servidor de desarrollo
+# Iniciar servidor de desarrollo en modo local
 npm run dev
 
 # Compilar para producción

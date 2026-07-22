@@ -1,43 +1,54 @@
-# Memoria del Proyecto — MrCerdo OS
+# Memoria del Proyecto — ALCIONE (Deco & Hogar)
 
-## Última sesión (17/07/2026)
-- **Tarea realizada**: Actualización del catálogo con los cortes, embutidos y precios oficiales por kg enviados por Mr. Cerdo, además de incorporación de categorías gourmet e implementación de reglas de filtrado ampliadas.
-- **Agentes involucrados**: Coordinator, Software Architect, BA, Backend Expert, Frontend Expert
-- **Decisiones tomadas**:
-  - Crear las categorías `Ahumados & Parrilla` (`cat-ahumados-parrilla-mrcerdo`) y `Curados en Sal` (`cat-curados-sal-mrcerdo`) en `defaultCatalog.ts`, `ClientHome.tsx` y `seed_mrcerdo.sql`.
-  - Incorporar la línea oficial de precios por kg ($ mil):
-    - **Ahumados & Parrilla**: Choris ($22.000), Matambre ahumado ($24.000), Bondiola ahumada en medallones ($19.000), Vacío ahumado ($18.000), Costillas ($16.000).
-    - **Curados en Sal**: Bondiola curada en sal ($28.000), Jamón ahumado curado en sal ($29.000), Salame de campo artesanal ($28.000), Longaniza española curada ($28.000).
-  - Ampliar `filterMrCerdoCategories` y `filterMrCerdoProducts` en `defaultCatalog.ts` para que permitan keywords y prefijos de código (`PA-`, `CU-`, `VA-`, etc.) sin falsos negativos ni exclusiones no deseadas.
-  - Sincronizar el archivo SQL `seed_mrcerdo.sql` para que el sembrado de base de datos coincida con la carta del cliente.
+## Última sesión (21/07/2026) — Setup inicial de Alcione
 
-## Estado actual
-- **Fase del proyecto**: Implementación / Mantenimiento
-- **Sprint actual**: Catálogo Oficial y Puesta a Punto
-- **Funcionalidades completadas**:
-  - Storefront cliente vista catálogo + carrito + pedido vía WhatsApp
-  - Admin dashboard con Kanban, POS, Analytics, Catalog Manager, Banner Manager
-  - Integración con Supabase (PostgreSQL)
-  - Catálogo de cortes por kg (`Ahumados & Parrilla` y `Curados en Sal`) y embutidos gourmet
+### Resumen
+Se creó el proyecto **Alcione** desde una copia base. Se eliminaron todos los rastros del tenant anterior (MrCerdo) y se configuró la plataforma como un eCommerce 100% dedicado a **decoración del hogar**.
+
+### Tareas realizadas
+
+**Configuración inicial del proyecto:**
+1. ✅ **Identidad visual completa**: Definida paleta de colores (teal/dorado), tipografía (Playfair Display + Inter), estilo elegante y luminoso.
+2. ✅ **`src/lib/tenantConfig.ts`**: Configuración central con datos de Alcione (colores, fuentes, contacto, catálogo default, filtros).
+3. ✅ **`src/lib/defaultCatalog.ts`**: Catálogo completo con 9 categorías y 18 productos demo de decoración.
+4. ✅ **`src/lib/design-tokens.ts`**: Tokens de diseño generados desde la configuración de Alcione.
+5. ✅ **`src/lib/useTenantTheme.ts`**: Hook que inyecta Google Fonts, CSS variables y favicon dinámicamente.
+6. ✅ **`src/index.css`**: Tema Tailwind v4 con colores de Alcione como default.
+7. ✅ **Enrutamiento**: `App.tsx` redirige `/` a `/alcione`.
+8. ✅ **Splash screen**: Pantalla de bienvenida con logo, badge "DECO AL MEJOR PRECIO ❤️" y etiquetas.
+9. ✅ **Header dinámico**: Logo, nombre, tagline y color primario desde configuración.
+10. ✅ **Catálogo cliente**: Búsqueda, categorías con colores, keywords, banners, carrito.
+11. ✅ **Modal de producto**: Detalle con precio, cantidad, notas y branding Alcione.
+12. ✅ **Panel admin**: Adaptado con colores y texto de Alcione.
+
+**Base de datos:**
+13. ✅ **`sql/seed_alcione.sql`**: Seed SQL para crear empresa, 9 categorías, 3 banners y 18 productos en Supabase.
+14. ✅ **`public/img/Catalogo/alcione/`**: Carpeta para imágenes de productos.
+
+**Limpieza de código legacy:**
+15. ✅ Eliminados todos los catálogos y filtros de MrCerdo de `defaultCatalog.ts`.
+16. ✅ Eliminadas todas las referencias a colores, logo y branding de MrCerdo.
+17. ✅ Actualizados todos los componentes del admin que importaban filtros viejos.
+18. ✅ Cambiados defaults en `ProductModal.tsx`, `index.html` y `AdminDashboard.tsx`.
+
+### Validación
+- `tsc --noEmit` → **0 errores**
+- `vite build` → **0 errores** (solo warning de chunk size)
+
+### Estado actual
+- **Fase del proyecto**: Setup inicial — Desarrollo activo
 - **Bloqueos activos**: Ninguno
 
-## Historial de cambios recientes
-| Fecha | Cambio | Responsable | Estado |
-|---|---|---|---|
-| 17/07/2026 | Integración de precios por kg y categorías Ahumados/Curados en `defaultCatalog.ts` y `ClientHome.tsx` | Coordinator | ✅ |
-| 17/07/2026 | Actualización del seed SQL en `seed_mrcerdo.sql` con los cortes y precios oficiales | Coordinator | ✅ |
-| 17/07/2026 | Verificación de compilación TypeScript (`tsc && vite build`) y Zero Regressions | QA Expert / Coordinator | ✅ |
-| 13/07/2026 | Simplificación getEmpresa.ts (eliminar legacy supplements) | Coordinator | ✅ |
-| 13/07/2026 | Limpieza ClientHome.tsx y ProductModal.tsx | Coordinator | ✅ |
-
-## Lecciones aprendidas
-- El sistema de filtrado estricto por regex (`filterMrCerdoProducts` / `filterMrCerdoCategories`) es excelente para prevenir sangrado de datos legacy de suplementos, pero requiere ampliación explícita de prefijos y keywords cuando se suman nuevas líneas de productos gourmet o cortes de carne.
-- Separar "Salame de campo" y "Longaniza Española" en dos ítems individuales ($28.000/kg c/u) otorga mayor claridad en el carrito y en los pedidos de WhatsApp.
-
-## Próximos pasos
-- [x] Limpieza de código legacy de suplementos y simplificación multi-tenant
-- [x] Actualización oficial de productos y precios por kg enviados por Mr. Cerdo
-- [x] Actualización de memoria del proyecto y validación de build (`tsc`)
-- [ ] Ejecutar el nuevo `seed_mrcerdo.sql` en la consola SQL de Supabase para reflejar los cambios en producción
-- [ ] Agregar fotografías reales de los nuevos cortes ahumados y curados
+### Próximos pasos
+- [x] Ejecutar `seed_alcione.sql` en la consola SQL de Supabase (¡Completado y con columnas defensivas!)
+- [x] Configurar repositorio remoto a `https://github.com/elopezgit/alcione.git` y hacer primer push
+- [ ] Agregar fotografías reales de productos en `public/img/Catalogo/alcione/`
+- [ ] Configurar número de WhatsApp real de Alcione (actualmente usa canal de WP)
+- [ ] Configurar Instagram de Alcione
+- [ ] Agregar más productos al catálogo según disponibilidad real
 - [ ] Configurar tests automatizados E2E
+
+### Pendientes a futuro
+- Refactorizar el panel admin para usar colores dinámicos desde tenantConfig en lugar de valores hardcodeados
+- Implementar subida de imágenes desde el admin
+
